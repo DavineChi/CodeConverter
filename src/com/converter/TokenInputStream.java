@@ -7,6 +7,11 @@ import java.io.InputStreamReader;
 
 import com.converter.Token.TokenType;
 
+/************************************************************************************************
+ * This class is used to read and manage streams of lines and tokens from a given input file.
+ * <p>
+ * 
+ */
 public class TokenInputStream {
 	
 	private int lineNumber = 1;
