@@ -2,16 +2,26 @@ package com.converter.node;
 
 public class ProgramNode extends ASTNode {
 	
-	private ASTNode nodeProgram;
+	private static final int INITIAL_CAPACITY = 10;
 	
-	public ProgramNode(ASTNode program) {
+	private ASTNode[] nodeNodes;
+	
+	public ProgramNode() {
 		
 		this.nodeType = NodeType.PROGRAM;
 		this.nodeProgram = program;
+		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
 	}
 	
-	public ASTNode getProgram() {
+	public ProgramNode(ASTNode node) {
 		
-		return nodeProgram;
+		this();
+		this.addNode(node);
+	}
+	
+	public ASTNode[] getNodes() {
+		
+		return nodeNodes;
+	}
 	}
 }
