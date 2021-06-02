@@ -233,6 +233,15 @@ public class TokenInputStream {
 		return stream;
 	}
 	
+	public String[] split(String value) {
+		
+		String[] result = null;
+		
+		result = value.split(delimiter);
+		
+		return result;
+	}
+	
 	public boolean eof() {
 		
 		String line = this.peekLine();
