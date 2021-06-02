@@ -6,6 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 
 import com.converter.Token.TokenType;
+import com.converter.utils.Util;
 
 /************************************************************************************************
  * This class is used to read and manage streams of lines and tokens from a given input file.
@@ -22,6 +23,8 @@ public class TokenInputStream {
 	private String streamLine;
 	private String[] tokens;
 	private Token current;
+	
+	private boolean lineHasContinuation;
 	
 	/********************************************************************************************
 	 * Constructs a new TokenInputStream with a space character (" ") as the default delimiter.
@@ -50,12 +53,45 @@ public class TokenInputStream {
 		this.reader = new BufferedReader(new InputStreamReader(inputStream));
 		//this.streamLine = this.peekLine();
 		//this.tokens = streamLine.split(delimiter);
+		this.lineHasContinuation = false;
 	}
 	
 	private void lineFeed() {
 		
 		tokenColumn = 0;
 		lineNumber++;
+	}
+	
+	private String collectContinuationLines() {
+		
+		String result = "";
+		
+		StringBuilder sb = new StringBuilder();
+		
+		sb.append(streamLine);
+		
+		try {
+			
+			while (lineHasContinuation) {
+				
+				streamLine = reader.readLine();
+				streamLine = streamLine.trim();
+				
+				sb.append(streamLine);
+				
+				lineHasContinuation = Util.hasLineContinuation(streamLine);
+			}
+		}
+		
+		catch (IOException e) {
+			
+			e.printStackTrace();
+		}
+		
+		result = sb.toString();
+		result = result.replace(" _", " ");
+		
+		return result;
 	}
 	
 	public String readWhile(boolean condition) {
@@ -215,11 +251,16 @@ public class TokenInputStream {
 	
 	public String nextLine() {
 		
-		String stream = "";
-		
 		try {
 			
-			stream = reader.readLine();
+			streamLine = reader.readLine();
+			
+			lineHasContinuation = Util.hasLineContinuation(streamLine);
+			
+			if (lineHasContinuation) {
+				
+				streamLine = collectContinuationLines();
+			}
 			
 			this.lineFeed();
 		}
@@ -230,7 +271,7 @@ public class TokenInputStream {
 			reportPosition();
 		}
 		
-		return stream;
+		return streamLine;
 	}
 	
 	public String[] split(String value) {
