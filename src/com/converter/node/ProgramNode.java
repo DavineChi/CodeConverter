@@ -1,5 +1,7 @@
 package com.converter.node;
 
+import java.util.Arrays;
+
 public class ProgramNode extends ASTNode {
 	
 	private static final int INITIAL_CAPACITY = 10;
@@ -26,5 +28,31 @@ public class ProgramNode extends ASTNode {
 		
 		return nodeNodes;
 	}
+	
+	public void addNode(ASTNode node) {
+		
+		ASTNode[] nodesCopy;
+		
+		// Do not add if already in nodeNodes
+		for (int i = 0; i < nodeNodes.length; i++) {
+			
+			if (nodeNodes[i] == node) {
+				
+				return;
+			}
+		}
+		
+		// Grow nodeNodes as needed
+		if ((size + 1) > capacity) {
+			
+			capacity = nodeNodes.length * 2;
+			//nodesCopy = new ASTNode[capacity];
+			nodesCopy = Arrays.copyOfRange(nodeNodes, 0, capacity);
+			nodeNodes = nodesCopy;
+		}
+		
+		nodeNodes[size] = node;
+		
+		size++;
 	}
 }
