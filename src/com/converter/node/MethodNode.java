@@ -54,4 +54,10 @@ public class MethodNode extends ASTNode {
 		
 		return nodeBody;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":" + nodeName;
+	}
 }
