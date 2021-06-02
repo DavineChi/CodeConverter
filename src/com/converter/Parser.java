@@ -2,6 +2,7 @@ package com.converter;
 
 import com.converter.node.ASTNode;
 import com.converter.node.MethodNode;
+import com.converter.node.ParameterNode;
 import com.converter.node.ProgramNode;
 import com.converter.utils.Util;
 
@@ -17,19 +18,17 @@ import com.converter.utils.Util;
 public class Parser {
 	
 	private TokenInputStream stream;
+	private ProgramNode program;
 	private String currentLine;
-	private boolean lineHasContinuation;
 	
 	public Parser(String filename) {
 		
 		this.stream = new TokenInputStream(filename);
+		this.program = new ProgramNode();
 		this.currentLine = null;
-		this.lineHasContinuation = false;
 	}
 	
 	public ASTNode parseProgram() {
-		
-		ASTNode program = new ProgramNode(null);
 		
 		// TODO: implementation
 		
@@ -67,35 +66,80 @@ public class Parser {
 		
 	}
 	
+	public ParameterNode[] collectParameters(String value) {
+		
+		ParameterNode[] result = null;
+		
+		value = value.replace(")", "");
+		
+		String[] splitValues = value.split("\\(");
+		String parameters = splitValues[1];
+		
+		String[] parametersList = parameters.split(",");
+		
+		result = new ParameterNode[parametersList.length];
+		
+		for (int i = 0; i < parametersList.length; i++) {
+			
+			String item = parametersList[i].trim();
+			String[] parts = item.split(" ");
+			
+			String first = parts[0];
+			String second = parts[1];
+			String third = parts[2];
+			String fourth = "";
+			
+			if (parts.length == 4) {
+				
+				fourth = parts[3];
+			}
+			
+			String passedBy = "";
+			String parameterName = "";
+			String dataType = "";
+			
+			if (first.toUpperCase().equals("BYREF") ||
+				first.toUpperCase().equals("BYVAL")) {
+				
+				passedBy = first;
+				parameterName = second;
+				dataType = fourth;
+			}
+			
+			else {
+				
+				parameterName = first;
+				dataType = third;
+			}
+			
+			result[i] = new ParameterNode(passedBy, parameterName, dataType);
+		}
+		
+		return result;
+	}
+	
 	public MethodNode parseMethod(String value) {
 		
 		MethodNode result = null;
 		
-		String accessModifier = "";
+		boolean isFunction = false;
+		boolean isSubRoutine = false;
+		
+		String[] tokens = stream.split(value);
+		
+		String accessModifier = tokens[0];
+		String callType = tokens[1];
+		String callName = tokens[2].split("\\(")[0];
 		String returnType = "";
 		
-		String line = value.toUpperCase();
+		ParameterNode[] parameters = collectParameters(value);
 		
-		if (line.contains("PUBLIC")) {
+		if (callType.equals("FUNCTION")) {
 			
-			accessModifier = "public";
+			returnType = tokens[tokens.length - 1];
 		}
 		
-		if (line.contains("PRIVATE")) {
-			
-			accessModifier = "private";
-		}
-		
-		if (line.contains("SUB")) {
-			
-			returnType = "void";
-		}
-		
-		if (line.contains("FUNCTION")) {
-			
-			// TOD: logical branches to find return type
-			returnType = "";
-		}
+		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, null);
 		
 		return result;
 	}
@@ -117,48 +161,15 @@ public class Parser {
 		
 	}
 	
-	private String collectContinuationLines() {
-		
-		String result = "";
-		
-		StringBuilder sb = new StringBuilder();
-		
-		sb.append(currentLine);
-		
-		while (lineHasContinuation) {
-			
-			currentLine = stream.nextLine();
-			currentLine = currentLine.trim();
-			
-			sb.append(currentLine);
-			
-			lineHasContinuation = Util.hasLineContinuation(currentLine);
-		}
-		
-		result = sb.toString();
-		result = result.replace(" _", " ");
-		
-		return result;
-	}
-	
 	public void start() {
-		
-		ProgramNode prog;
 		
 		while (!stream.eof()) {
 			
 			currentLine = stream.nextLine();
 			
-			lineHasContinuation = Util.hasLineContinuation(currentLine);
-			
 			boolean isComment = Util.isComment(currentLine);
 			boolean containsComment = Util.containsComment(currentLine);
 			boolean isMethod = Util.isFunctionOrSub(currentLine);
-			
-			if (lineHasContinuation) {
-				
-				currentLine = collectContinuationLines();
-			}
 			
 			if (containsComment) {
 				
@@ -173,8 +184,12 @@ public class Parser {
 			
 			if (isMethod) {
 				
-				parseMethod(currentLine);
+				MethodNode method = parseMethod(currentLine);
+				
+				program.addNode(method);
 			}
+			
+			int stop = 0;
 		}
 	}
 	
