@@ -3,14 +3,15 @@ package com.converter.node;
 public class MethodNode extends ASTNode {
 	
 	private String nodeName;
-	private String[] nodeVariables;
+	private ParameterNode[] nodeParameters;
 	private ASTNode nodeBody;
 	
 	public MethodNode(String name, String[] variables, ASTNode body) {
+                      ParameterNode[] parameters,
 		
 		this.nodeType = NodeType.METHOD;
 		this.nodeName = name;
-		this.nodeVariables = variables;
+		this.nodeParameters = parameters;
 		this.nodeBody = body;
 	}
 	
@@ -19,9 +20,9 @@ public class MethodNode extends ASTNode {
 		return nodeName;
 	}
 	
-	public String[] getVariables() {
+	public ParameterNode[] getParameters() {
 		
-		return nodeVariables;
+		return nodeParameters;
 	}
 	
 	public ASTNode getBody() {
