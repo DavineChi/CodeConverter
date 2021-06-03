@@ -15,8 +15,8 @@ import com.converter.utils.Util;
  */
 public class TokenInputStream {
 	
-	private int lineNumber = 1;
-	private int tokenColumn = 0;
+	private static int lineNumber = 1;
+	private static int tokenColumn = 0;
 	
 	private BufferedReader reader;
 	private String delimiter;
@@ -290,7 +290,7 @@ public class TokenInputStream {
 		return line == null;
 	}
 	
-	public void reportPosition() {
+	public static void reportPosition() {
 		
 		System.out.println("Line : " + lineNumber + ", token column : " + tokenColumn);
 	}
