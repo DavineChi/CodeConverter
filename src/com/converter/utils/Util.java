@@ -10,6 +10,11 @@ public class Util {
 		
 		boolean result = false;
 		
+		if (value.equals("")) {
+			
+			return result;
+		}
+		
 		char[] characters = value.toCharArray();
 		char ch = characters[characters.length - 1];
 		
