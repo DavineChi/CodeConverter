@@ -6,6 +6,38 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isValidDataType(String value) {
+		
+		boolean result = false;
+		
+		for (int i = 0; i < DataType.LIST.length; i++) {
+			
+			String type = DataType.LIST[i];
+			
+			if (value.equals(type)) {
+				
+				result = true;
+				break;
+			}
+		}
+		
+		return result;
+	}
+	
+	public static boolean isDeclaration(String value) {
+		
+		boolean result = false;
+		
+		String request = value.toUpperCase();
+		
+		if (request.startsWith("DIM") && request.contains(" AS ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static boolean hasLineContinuation(String value) {
 		
 		boolean result = false;
