@@ -175,6 +175,15 @@ public class Parser {
 		return result;
 	}
 	
+	public ExpressionNode parseExpression(String value) {
+		
+		ExpressionNode result = null;
+		
+		
+		
+		return result;
+	}
+	
 	public AssignmentNode parseAssignment(String value) {
 		
 		AssignmentNode result = null;
