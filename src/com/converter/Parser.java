@@ -34,6 +34,8 @@ public class Parser {
 		this.isComment = false;
 		this.containsComment = false;
 		this.isMethod = false;
+		this.isAssignment = false;
+		this.isDeclaration = false;
 	}
 	
 	public ASTNode parseProgram() {
@@ -178,6 +180,8 @@ public class Parser {
 			isComment = Util.isComment(currentLine);
 			containsComment = Util.containsComment(currentLine);
 			isMethod = Util.isFunctionOrSub(currentLine);
+			isAssignment = Util.isAssignment(currentLine);
+			isDeclaration = Util.isDeclaration(currentLine);
 			
 			if (containsComment) {
 				
