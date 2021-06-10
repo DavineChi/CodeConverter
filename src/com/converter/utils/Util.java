@@ -104,7 +104,9 @@ public class Util {
                                         "PUBLIC FUNCTION",
                                         "PRIVATE FUNCTION" };
 		
-		for (String term : terms) {
+		for (int i = 0; i < terms.length; i++) { 
+			
+			String term = terms[i];
 			
 			if (request.contains(term)) {
 				
