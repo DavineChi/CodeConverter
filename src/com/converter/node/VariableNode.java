@@ -4,14 +4,14 @@ public class VariableNode extends ASTNode {
 	
 	private String nodeAccessModifier;
 	private String nodeDataType;
-	private String nodeValue;
+	private String nodeName;
 	
 	public VariableNode(String accessModifier, String dataType, String value) {
 		
 		this.nodeType = NodeType.VARIABLE;
 		this.nodeAccessModifier = accessModifier;
 		this.nodeDataType = dataType;
-		this.nodeValue = value;
+		this.nodeName = name;
 	}
 	
 	public String getAccessModifier() {
@@ -24,7 +24,11 @@ public class VariableNode extends ASTNode {
 		return nodeDataType;
 	}
 	
-	public String getValue() {
+	public String getName() {
+		
+		return nodeName;
+	}
+	
 	
 	@Override
 	public String toString() {
