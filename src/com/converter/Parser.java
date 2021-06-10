@@ -191,6 +191,10 @@ public class Parser {
 			
 			int stop = 0;
 		}
+	
+	public void exit() {
+		
+		stream.close();
 	}
 	
 	public static void main(String[] args) {
@@ -198,6 +202,8 @@ public class Parser {
 		Parser parser = new Parser("main/resources/CEto.cls");
 		
 		parser.start();
+		
+		parser.exit();
 	}
 }
 

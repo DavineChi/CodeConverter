@@ -294,4 +294,17 @@ public class TokenInputStream {
 		
 		System.out.println("Line : " + lineNumber + ", token column : " + tokenColumn);
 	}
+	
+	public void close() {
+		
+		try {
+			
+			reader.close();
+		}
+		
+		catch (IOException ex) {
+			
+			ex.printStackTrace();
+		}
+	}
 }
