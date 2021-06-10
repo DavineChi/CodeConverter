@@ -271,7 +271,7 @@ public class TokenInputStream {
 			reportPosition();
 		}
 		
-		return streamLine;
+		return streamLine.trim();
 	}
 	
 	public String[] splitValue(String value) {
