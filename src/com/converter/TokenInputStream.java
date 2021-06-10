@@ -274,7 +274,7 @@ public class TokenInputStream {
 		return streamLine;
 	}
 	
-	public String[] split(String value) {
+	public String[] splitValue(String value) {
 		
 		String[] result = null;
 		
