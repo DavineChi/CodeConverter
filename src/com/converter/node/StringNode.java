@@ -14,4 +14,10 @@ public class StringNode extends ASTNode {
 		
 		return nodeValue;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":" + nodeValue;
+	}
 }

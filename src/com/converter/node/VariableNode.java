@@ -25,7 +25,10 @@ public class VariableNode extends ASTNode {
 	}
 	
 	public String getValue() {
+	
+	@Override
+	public String toString() {
 		
-		return nodeValue;
+		return nodeType.toString() + ":" + nodeName;
 	}
 }
