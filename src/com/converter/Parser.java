@@ -156,7 +156,7 @@ public class Parser {
 		boolean isFunction = false;
 		boolean isSubRoutine = false;
 		
-		String[] tokens = stream.split(value);
+		String[] tokens = value.split(" ");
 		
 		String accessModifier = tokens[0];
 		String callType = tokens[1];
