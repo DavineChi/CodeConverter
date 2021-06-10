@@ -5,12 +5,19 @@ public class AssignmentNode extends ASTNode {
 	private String nodeOperator = "=";
 	private ASTNode nodeLeft;
 	private ASTNode nodeRight;
+	private String nodeInlineComment;
 	
 	public AssignmentNode(ASTNode left, ASTNode right) {
+		
+		this(left, right, null);
+	}
+	
+	public AssignmentNode(ASTNode left, ASTNode right, String inlineComment) {
 		
 		this.nodeType = NodeType.ASSIGNMENT;
 		this.nodeLeft = left;
 		this.nodeRight = right;
+		this.nodeInlineComment = inlineComment;
 	}
 	
 	public String getNodeOperator() {
@@ -28,6 +35,10 @@ public class AssignmentNode extends ASTNode {
 		return nodeRight;
 	}
 	
+	public String getInlineComment() {
+		
+		return nodeInlineComment;
+	}
 	
 	@Override
 	public String toString() {
