@@ -321,7 +321,8 @@ public class Parser {
 				program.addNode(assignment);
 			}
 		}
-			int stop = 0;
+		
+		int stop = 0;
 	}
 	
 	public void exit() {
