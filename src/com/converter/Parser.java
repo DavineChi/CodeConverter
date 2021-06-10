@@ -1,9 +1,15 @@
 package com.converter;
 
 import com.converter.node.ASTNode;
+import com.converter.node.AssignmentNode;
+import com.converter.node.DeclarationNode;
+import com.converter.node.ExpressionNode;
 import com.converter.node.MethodNode;
 import com.converter.node.ParameterNode;
 import com.converter.node.ProgramNode;
+import com.converter.node.StringNode;
+import com.converter.node.VariableNode;
+import com.converter.utils.DataType;
 import com.converter.utils.Util;
 
 /************************************************************************************************
