@@ -21,11 +21,19 @@ public class Parser {
 	private ProgramNode program;
 	private String currentLine;
 	
+	private boolean isComment;
+	private boolean containsComment;
+	private boolean isMethod;
+	
 	public Parser(String filename) {
 		
 		this.stream = new TokenInputStream(filename);
 		this.program = new ProgramNode();
 		this.currentLine = null;
+		
+		this.isComment = false;
+		this.containsComment = false;
+		this.isMethod = false;
 	}
 	
 	public ASTNode parseProgram() {
@@ -167,9 +175,9 @@ public class Parser {
 			
 			currentLine = stream.nextLine();
 			
-			boolean isComment = Util.isComment(currentLine);
-			boolean containsComment = Util.containsComment(currentLine);
-			boolean isMethod = Util.isFunctionOrSub(currentLine);
+			isComment = Util.isComment(currentLine);
+			containsComment = Util.containsComment(currentLine);
+			isMethod = Util.isFunctionOrSub(currentLine);
 			
 			if (containsComment) {
 				
