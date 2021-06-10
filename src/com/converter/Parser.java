@@ -24,6 +24,8 @@ public class Parser {
 	private boolean isComment;
 	private boolean containsComment;
 	private boolean isMethod;
+	private boolean isAssignment;
+	private boolean isDeclaration;
 	
 	public Parser(String filename) {
 		
@@ -128,6 +130,25 @@ public class Parser {
 		return result;
 	}
 	
+	public DeclarationNode parseDeclaration(String value) {
+		
+		DeclarationNode result = null;
+		
+		String[] parts = value.split(" ");
+		
+		String variableName = parts[1];
+		String dataType = parts[3];
+		
+		boolean validType = Util.isValidDataType(dataType);
+		
+		if (validType) {
+			
+			result = new DeclarationNode(variableName, dataType);
+		}
+		
+		return result;
+	}
+	
 	public MethodNode parseMethod(String value) {
 		
 		MethodNode result = null;
@@ -150,6 +171,79 @@ public class Parser {
 		}
 		
 		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, null);
+		
+		return result;
+	}
+	
+	public AssignmentNode parseAssignment(String value) {
+		
+		AssignmentNode result = null;
+		
+		String[] tokens = value.split("'");
+		String[] assignmentTokens = tokens[0].trim().split("=");
+		
+		String comment = null;
+		
+		if (containsComment) {
+			
+			comment = "'" + tokens[1];
+		}
+		
+		String leftSide = assignmentTokens[0];
+		String rightSide = assignmentTokens[1];
+		
+		String accessModifier = "";
+		String dataType = "";
+		
+		String[] leftSideParts = leftSide.split(" ");
+		
+		String variableName = "";
+		
+		boolean isConstant = false;
+		
+		if (leftSide.toUpperCase().startsWith("PUBLIC") ||
+			leftSide.toUpperCase().startsWith("PRIVATE")) {
+			
+			String[] leftParts = leftSide.split(" ");
+			
+			accessModifier = leftParts[0].trim();
+		}
+		
+		if (leftSide.toUpperCase().contains("CONST")) {
+			
+			isConstant = true;
+		}
+		
+		if (!accessModifier.equals("") && isConstant) {
+			
+			variableName = leftSideParts[2];
+		}
+		
+		if (!accessModifier.equals("") && !isConstant) {
+			
+			variableName = leftSideParts[1];
+		}
+		
+		if (accessModifier.equals("")) {
+			
+			variableName = leftSideParts[0];
+		}
+		
+		for (int i = 0; i < DataType.LIST.length; i++) {
+			
+			String arg = DataType.LIST[i];
+			
+			if (leftSide.contains("As " + arg)) {
+				
+				dataType = arg;
+				break;
+			}
+		}
+		
+		VariableNode variable = new VariableNode(accessModifier, dataType, variableName, isConstant);
+		StringNode expression = new StringNode(rightSide.trim());
+		
+		result = new AssignmentNode(variable, expression, comment);
 		
 		return result;
 	}
@@ -194,6 +288,16 @@ public class Parser {
 				
 			}
 			
+			if (isDeclaration) {
+				
+				DeclarationNode declaration = parseDeclaration(currentLine);
+				
+				// TODO: Nest declarations to the appropriate parent node.
+				
+				program.addNode(declaration);
+				
+			}
+			
 			if (isMethod) {
 				
 				MethodNode method = parseMethod(currentLine);
@@ -201,8 +305,15 @@ public class Parser {
 				program.addNode(method);
 			}
 			
-			int stop = 0;
+			if (isAssignment) {
+				
+				AssignmentNode assignment = parseAssignment(currentLine);
+				
+				program.addNode(assignment);
+			}
 		}
+			int stop = 0;
+	}
 	
 	public void exit() {
 		
