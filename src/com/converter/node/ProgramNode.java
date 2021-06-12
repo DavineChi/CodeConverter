@@ -6,22 +6,29 @@ public class ProgramNode extends ASTNode {
 	
 	private static final int INITIAL_CAPACITY = 10;
 	
+	private String nodeId;
 	private ASTNode[] nodeNodes;
 	private int capacity;
 	private int size;
 	
-	public ProgramNode() {
+	public ProgramNode(String id) {
 		
+		this.nodeId = id;
 		this.nodeType = NodeType.PROGRAM;
 		this.capacity = INITIAL_CAPACITY;
 		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
 		this.size = 0;
 	}
 	
-	public ProgramNode(ASTNode node) {
+	public ProgramNode(String id, ASTNode node) {
 		
-		this();
+		this(id);
 		this.addNode(node);
+	}
+	
+	public String getId() {
+		
+		return nodeId;
 	}
 	
 	public ASTNode[] getNodes() {
