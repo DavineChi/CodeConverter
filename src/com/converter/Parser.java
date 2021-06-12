@@ -161,7 +161,7 @@ public class Parser {
 		String accessModifier = tokens[0];
 		String callType = tokens[1];
 		String callName = tokens[2].split("\\(")[0];
-		String returnType = "";
+		String returnType = null;
 		
 		ParameterNode[] parameters = collectParameters(value);
 		
