@@ -1,6 +1,5 @@
 package com.converter;
 
-import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
 import com.converter.node.DeclarationNode;
 import com.converter.node.ExpressionNode;
@@ -27,6 +26,8 @@ public class Parser {
 	private ProgramNode program;
 	private String currentLine;
 	
+	private boolean isTopLevelNode;
+	private boolean isBeginEndNode;
 	private boolean isComment;
 	private boolean containsComment;
 	private boolean isMethod;
@@ -36,9 +37,10 @@ public class Parser {
 	public Parser(String filename) {
 		
 		this.stream = new TokenInputStream(filename);
-		this.program = new ProgramNode();
 		this.currentLine = null;
 		
+		this.isTopLevelNode = false;
+		this.isBeginEndNode = false;
 		this.isComment = false;
 		this.containsComment = false;
 		this.isMethod = false;
@@ -46,24 +48,20 @@ public class Parser {
 		this.isDeclaration = false;
 	}
 	
-	public ASTNode parseProgram() {
+	public ProgramNode parseBeginEnd() {
 		
-		// TODO: implementation
+		ProgramNode result = new ProgramNode("BEGIN...END");
 		
-		
-		return program;
-	}
-	
-	public ASTNode parseTopLevel() {
-		
-		ASTNode program = null;
-		
-		while (!stream.eof()) {
+		do {
 			
+			currentLine = stream.nextLine();
 			
-		}
+			this.analyze();
+			this.process(result);
+			
+		} while (!(currentLine.toUpperCase().equals("END")));
 		
-		return program;
+		return result;
 	}
 	
 	public ParameterNode[] collectParameters(String value) {
@@ -263,52 +261,77 @@ public class Parser {
 		
 	}
 	
+	private void analyze() {
+		
+		isTopLevelNode = Util.isTopLevelNode(currentLine);
+		isBeginEndNode = Util.isBeginEndNode(currentLine);
+		isComment = Util.isComment(currentLine);
+		containsComment = Util.containsComment(currentLine);
+		isMethod = Util.isFunctionOrSub(currentLine);
+		isAssignment = Util.isAssignment(currentLine);
+		isDeclaration = Util.isDeclaration(currentLine);
+	}
+	
+	private void process(ProgramNode node) {
+		
+		if (containsComment) {
+			
+			Token tokenPreserved = stream.readComment(true);
+			Token tokenDisacarded = stream.readComment(false);
+		}
+		
+		if (isComment) {
+			
+			
+		}
+		
+		if (isDeclaration) {
+			
+			DeclarationNode declaration = parseDeclaration(currentLine);
+			
+			node.addNode(declaration);
+		}
+		
+		if (isMethod) {
+			
+			MethodNode method = parseMethod(currentLine);
+			
+			node.addNode(method);
+		}
+		
+		if (isAssignment) {
+			
+			AssignmentNode assignment = parseAssignment(currentLine);
+			
+			node.addNode(assignment);
+		}
+	}
+	
 	public void start() {
 		
 		while (!stream.eof()) {
 			
 			currentLine = stream.nextLine();
 			
-			isComment = Util.isComment(currentLine);
-			containsComment = Util.containsComment(currentLine);
-			isMethod = Util.isFunctionOrSub(currentLine);
-			isAssignment = Util.isAssignment(currentLine);
-			isDeclaration = Util.isDeclaration(currentLine);
+			this.analyze();
 			
-			if (containsComment) {
+			if (isTopLevelNode) {
 				
-				Token tokenPreserved = stream.readComment(true);
-				Token tokenDisacarded = stream.readComment(false);
+				program = new ProgramNode(currentLine);
+				
+				continue;
 			}
 			
-			if (isComment) {
+			if (isBeginEndNode) {
 				
+				ProgramNode beginEnd = parseBeginEnd();
 				
+				program.addNode(beginEnd);
+				
+				continue;
 			}
 			
-			if (isDeclaration) {
-				
-				DeclarationNode declaration = parseDeclaration(currentLine);
-				
-				// TODO: Nest declarations to the appropriate parent node.
-				
-				program.addNode(declaration);
-				
-			}
-			
-			if (isMethod) {
-				
-				MethodNode method = parseMethod(currentLine);
-				
-				program.addNode(method);
-			}
-			
-			if (isAssignment) {
-				
-				AssignmentNode assignment = parseAssignment(currentLine);
-				
-				program.addNode(assignment);
-			}
+			this.process(program);
 		}
 		
 		int stop = 0;
