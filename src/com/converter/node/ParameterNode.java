@@ -14,17 +14,17 @@ public class ParameterNode extends ASTNode {
 		this.nodeDataType = dataType;
 	}
 	
-	public String getNodePassedBy() {
+	public String getPassedBy() {
 		
 		return nodePassedBy;
 	}
 	
-	public String getNodeName() {
+	public String getName() {
 		
 		return nodeName;
 	}
 	
-	public String getNodeDataType() {
+	public String getDataType() {
 		
 		return nodeDataType;
 	}

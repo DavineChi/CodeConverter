@@ -19,17 +19,17 @@ public class IfNode extends ASTNode {
 		this.nodeElseResult = elseResult;
 	}
 	
-	public ASTNode getNodeCondition() {
+	public ASTNode getCondition() {
 		
 		return nodeCondition;
 	}
 	
-	public ASTNode getNodeThenResult() {
+	public ASTNode getThenResult() {
 		
 		return nodeThenResult;
 	}
 	
-	public ASTNode getNodeElseResult() {
+	public ASTNode getElseResult() {
 		
 		return nodeElseResult;
 	}

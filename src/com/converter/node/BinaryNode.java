@@ -14,17 +14,17 @@ public class BinaryNode extends ASTNode {
 		this.nodeRight = right;
 	}
 	
-	public String getNodeOperator() {
+	public String getOperator() {
 		
 		return nodeOperator;
 	}
 	
-	public ASTNode getNodeLeft() {
+	public ASTNode getLeft() {
 		
 		return nodeLeft;
 	}
 	
-	public ASTNode getNodeRight() {
+	public ASTNode getRight() {
 		
 		return nodeRight;
 	}

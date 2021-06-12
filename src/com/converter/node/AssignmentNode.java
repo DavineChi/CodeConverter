@@ -20,17 +20,17 @@ public class AssignmentNode extends ASTNode {
 		this.nodeInlineComment = inlineComment;
 	}
 	
-	public String getNodeOperator() {
+	public String getOperator() {
 		
 		return nodeOperator;
 	}
 	
-	public ASTNode getNodeLeft() {
+	public ASTNode getLeft() {
 		
 		return nodeLeft;
 	}
 	
-	public ASTNode getNodeRight() {
+	public ASTNode getRight() {
 		
 		return nodeRight;
 	}
