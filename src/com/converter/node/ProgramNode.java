@@ -52,7 +52,7 @@ public class ProgramNode extends ASTNode {
 		// Grow nodeNodes as needed
 		if ((size + 1) > capacity) {
 			
-			capacity = nodeNodes.length * 2;
+			capacity = nodeNodes.length + 10;
 			//nodesCopy = new ASTNode[capacity];
 			nodesCopy = Arrays.copyOfRange(nodeNodes, 0, capacity);
 			nodeNodes = nodesCopy;
