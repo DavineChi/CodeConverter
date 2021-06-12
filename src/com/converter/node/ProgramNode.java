@@ -62,4 +62,10 @@ public class ProgramNode extends ASTNode {
 		
 		size++;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":[" + nodeId + "]";
+	}
 }
