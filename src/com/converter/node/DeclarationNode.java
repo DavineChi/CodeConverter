@@ -25,6 +25,6 @@ public class DeclarationNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":" + nodeVariableName + ":" + nodeDataType;
+		return nodeType.toString() + ":[" + nodeVariableName + ":" + nodeDataType + "]";
 	}
 }

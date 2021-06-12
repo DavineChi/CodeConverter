@@ -18,6 +18,6 @@ public class StringNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":" + nodeValue;
+		return nodeType.toString() + ":[" + nodeValue + "]";
 	}
 }

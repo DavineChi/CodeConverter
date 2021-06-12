@@ -43,6 +43,6 @@ public class AssignmentNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":" + nodeLeft + " " + nodeOperator + " " + nodeRight;
+		return nodeType.toString() + ":[" + nodeLeft + " " + nodeOperator + " " + nodeRight + "]";
 	}
 }

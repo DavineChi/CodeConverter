@@ -39,6 +39,6 @@ public class ParameterNode extends ASTNode {
 			pass = "none";
 		}
 		
-		return "Passed By: " + pass + ", Name: " + nodeName + ", Data Type: " + nodeDataType;
+		return "Passed: " + pass + ", Name: " + nodeName + ", Data Type: " + nodeDataType;
 	}
 }
