@@ -36,7 +36,8 @@ public class ParameterNode extends ASTNode {
 		
 		if (nodePassedBy.equals("")) {
 			
-			pass = "none";
+			// VB6 default is to pass arguments by reference (ByRef)
+			pass = "default";
 		}
 		
 		return "Passed: " + pass + ", Name: " + nodeName + ", Data Type: " + nodeDataType;
