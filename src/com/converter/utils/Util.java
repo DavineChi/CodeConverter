@@ -6,6 +6,34 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isBeginEndNode(String value) {
+		
+		boolean result = false;
+		
+		value = value.toUpperCase();
+		
+		if (value.equals("BEGIN")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isTopLevelNode(String value) {
+		
+		boolean result = false;
+		
+		value = value.toUpperCase();
+		
+		if (value.contains("VERSION") && value.contains("CLASS")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static boolean isValidDataType(String value) {
 		
 		boolean result = false;
