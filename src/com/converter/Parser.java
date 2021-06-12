@@ -66,18 +66,6 @@ public class Parser {
 		return program;
 	}
 	
-	public void parseSub() {
-		
-		// TODO: implementation
-		
-	}
-	
-	public void parseFunction() {
-		
-		// TODO: implementation
-		
-	}
-	
 	public ParameterNode[] collectParameters(String value) {
 		
 		ParameterNode[] result = null;
