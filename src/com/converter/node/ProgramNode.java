@@ -2,9 +2,7 @@ package com.converter.node;
 
 import java.util.Arrays;
 
-public class ProgramNode extends ASTNode {
-	
-	private static final int INITIAL_CAPACITY = 10;
+public class ProgramNode extends ASTNode implements INodeCollection {
 	
 	private String nodeId;
 	private ASTNode[] nodeNodes;
@@ -36,6 +34,7 @@ public class ProgramNode extends ASTNode {
 		return nodeNodes;
 	}
 	
+	@Override
 	public void addNode(ASTNode node) {
 		
 		ASTNode[] nodesCopy;
