@@ -14,4 +14,10 @@ public class CommentNode extends ASTNode {
 		
 		return nodeComment;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":[" + nodeComment + "]";
+	}
 }

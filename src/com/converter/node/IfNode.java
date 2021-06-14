@@ -68,4 +68,10 @@ public class IfNode extends ASTNode implements INodeCollection {
 		
 		size++;
 	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":[" + nodeCondition + " (" + size + " lines)]";
+	}
 }
