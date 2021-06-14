@@ -1,13 +1,22 @@
 package com.converter;
 
+import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
+import com.converter.node.BodyNode;
+import com.converter.node.CommentNode;
 import com.converter.node.DeclarationNode;
 import com.converter.node.ExpressionNode;
+import com.converter.node.INodeCollection;
+import com.converter.node.IfNode;
 import com.converter.node.MethodNode;
+import com.converter.node.OnErrorNode;
 import com.converter.node.ParameterNode;
 import com.converter.node.ProgramNode;
+import com.converter.node.PropertyNode;
+import com.converter.node.SetNode;
 import com.converter.node.StringNode;
 import com.converter.node.VariableNode;
+import com.converter.node.WithNode;
 import com.converter.utils.DataType;
 import com.converter.utils.Util;
 
@@ -26,6 +35,9 @@ public class Parser {
 	private ProgramNode program;
 	private String currentLine;
 	
+	private boolean[] bypassFuse;
+	private boolean bypassTopLevel;
+	
 	private boolean isTopLevelNode;
 	private boolean isBeginEndNode;
 	private boolean isComment;
@@ -33,11 +45,22 @@ public class Parser {
 	private boolean isMethod;
 	private boolean isAssignment;
 	private boolean isDeclaration;
+	private boolean isSetStatement;
+	private boolean isWithBlock;
+	private boolean isIfBlock;
+	private boolean isCall;
+	private boolean isProperty;
+	private boolean isReturnStatement;
+	private boolean isOnErrorGoto;
+	private boolean isEndOfFunctionOrSub;
 	
 	public Parser(String filename) {
 		
 		this.stream = new TokenInputStream(filename);
 		this.currentLine = null;
+		
+		this.bypassFuse = new boolean[] { false, false };
+		this.bypassTopLevel = false;
 		
 		this.isTopLevelNode = false;
 		this.isBeginEndNode = false;
@@ -46,6 +69,98 @@ public class Parser {
 		this.isMethod = false;
 		this.isAssignment = false;
 		this.isDeclaration = false;
+		this.isSetStatement = false;
+		this.isWithBlock = false;
+		this.isIfBlock = false;
+		this.isCall = false;
+		this.isProperty = false;
+		this.isReturnStatement = false;
+		this.isOnErrorGoto = false;
+	}
+	
+	private void analyze() {
+		
+		isComment = Util.isComment(currentLine);
+		containsComment = Util.containsComment(currentLine);
+		isMethod = Util.isFunctionOrSub(currentLine);
+		isAssignment = Util.isAssignment(currentLine);
+		isDeclaration = Util.isDeclaration(currentLine);
+		isSetStatement = Util.isSetStatement(currentLine);
+		isWithBlock = Util.isWithBlock(currentLine);
+		isIfBlock = Util.isIfBlock(currentLine);
+		isCall = Util.isCall(currentLine);
+		isProperty = Util.isProperty(currentLine);
+		isReturnStatement = Util.isReturnStatement(currentLine);
+		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
+		isEndOfFunctionOrSub = Util.isEndOfFunctionOrSub(currentLine);
+	}
+	
+	private void process(INodeCollection node) {
+		
+		if (isComment) {
+			
+			CommentNode comment = parseComment(currentLine);
+			
+			node.addNode(comment);
+		}
+		
+		if (isDeclaration) {
+			
+			DeclarationNode declaration = parseDeclaration(currentLine);
+			
+			node.addNode(declaration);
+		}
+		
+		if (isMethod) {
+			
+			MethodNode method = parseMethod(currentLine);
+			
+			node.addNode(method);
+		}
+		
+		if (isAssignment) {
+			
+			ASTNode result = parseAssignment(currentLine);
+			
+			if (result instanceof SetNode) {
+				
+				result = (SetNode)(result);
+			}
+			
+			else {
+				
+				result = (AssignmentNode)(result);
+			}
+			
+			node.addNode(result);
+		}
+		
+		if (isWithBlock) {
+			
+			WithNode withNode = parseWithBlock();
+			
+			node.addNode(withNode);
+		}
+		
+//		if (isIfBlock) {
+//			
+//			IfNode ifNode = parseIfBlock();
+//			
+//			node.addNode(ifNode);
+//		}
+		
+		if (isCall) {
+			
+			// TODO: implementation
+			
+		}
+		
+		if (isOnErrorGoto) {
+			
+			OnErrorNode error = new OnErrorNode(currentLine);
+			
+			node.addNode(error);
+		}
 	}
 	
 	public ProgramNode parseBeginEnd() {
@@ -59,7 +174,18 @@ public class Parser {
 			this.analyze();
 			this.process(result);
 			
-		} while (!(currentLine.toUpperCase().equals("END")));
+		} while (!(currentLine.equals("END")));
+		
+		return result;
+	}
+	
+	public CommentNode parseComment(String value) {
+		
+		CommentNode result = null;
+		
+		value = value.replace("'", "");
+		
+		result = new CommentNode(value);
 		
 		return result;
 	}
@@ -68,50 +194,84 @@ public class Parser {
 		
 		ParameterNode[] result = null;
 		
-		value = value.replace(")", "");
+		String[] firstSplit = value.split("\\)");
+		String[] secondSplit = firstSplit[0].split("\\(");
 		
-		String[] splitValues = value.split("\\(");
-		String parameters = splitValues[1];
-		
-		String[] parametersList = parameters.split(",");
-		
-		result = new ParameterNode[parametersList.length];
-		
-		for (int i = 0; i < parametersList.length; i++) {
+		if (secondSplit.length > 1) {
 			
-			String item = parametersList[i].trim();
-			String[] parts = item.split(" ");
+			String parameters = secondSplit[1];
 			
-			String first = parts[0];
-			String second = parts[1];
-			String third = parts[2];
-			String fourth = "";
+			String[] parametersList = parameters.split(",");
 			
-			if (parts.length == 4) {
+			result = new ParameterNode[parametersList.length];
+			
+			for (int i = 0; i < parametersList.length; i++) {
 				
-				fourth = parts[3];
-			}
-			
-			String passedBy = "";
-			String parameterName = "";
-			String dataType = "";
-			
-			if (first.toUpperCase().equals("BYREF") ||
-				first.toUpperCase().equals("BYVAL")) {
+				String item = parametersList[i].trim();
+				String[] parts = item.split(" ");
 				
-				passedBy = first;
-				parameterName = second;
-				dataType = fourth;
-			}
-			
-			else {
+				String first = parts[0];
+				String second = "";
+				String third = "";
+				String fourth = "";
 				
-				parameterName = first;
-				dataType = third;
+				if (parts.length > 1) {
+					
+					second = parts[1];
+				}
+				
+				if (parts.length > 2) {
+					
+					third = parts[2];
+					fourth = "";
+				}
+				
+				if (parts.length == 4) {
+					
+					fourth = parts[3];
+				}
+				
+				String passedBy = "";
+				String parameterName = "";
+				String dataType = "";
+				
+				if (first.equals("ByRef") || first.equals("ByVal")) {
+					
+					passedBy = first;
+					parameterName = second;
+					dataType = fourth;
+				}
+				
+				else {
+					
+					parameterName = first;
+					dataType = third;
+				}
+				
+				result[i] = new ParameterNode(passedBy, parameterName, dataType);
 			}
-			
-			result[i] = new ParameterNode(passedBy, parameterName, dataType);
 		}
+		
+		return result;
+	}
+	
+	public BodyNode collectBody(String name) {
+		
+		BodyNode result = new BodyNode(name);
+		
+		do {
+			
+			currentLine = stream.nextLine();
+			
+			this.analyze();
+			this.process(result);
+			
+			if (isReturnStatement) {
+				
+				result.setReturnStatement(currentLine);
+			}
+			
+		} while (!isEndOfFunctionOrSub);
 		
 		return result;
 	}
@@ -139,9 +299,6 @@ public class Parser {
 		
 		MethodNode result = null;
 		
-		boolean isFunction = false;
-		boolean isSubRoutine = false;
-		
 		String[] tokens = value.split(" ");
 		
 		String accessModifier = tokens[0];
@@ -149,14 +306,15 @@ public class Parser {
 		String callName = tokens[2].split("\\(")[0];
 		String returnType = null;
 		
-		ParameterNode[] parameters = collectParameters(value);
-		
-		if (callType.equals("FUNCTION")) {
+		if (callType.equals("Function")) {
 			
 			returnType = tokens[tokens.length - 1];
 		}
 		
-		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, null);
+		ParameterNode[] parameters = collectParameters(value);
+		BodyNode methodBody = collectBody(callName);
+		
+		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, methodBody);
 		
 		return result;
 	}
@@ -171,38 +329,117 @@ public class Parser {
 		return result;
 	}
 	
-	public AssignmentNode parseAssignment(String value) {
+	public WithNode parseWithBlock() {
 		
-		AssignmentNode result = null;
+		WithNode result = null;
 		
-		String[] tokens = value.split("'");
-		String[] assignmentTokens = tokens[0].trim().split("=");
+		String[] parts = currentLine.split(" ");
+		String expression = parts[1];
 		
+		result = new WithNode(expression);
+		
+		do {
+			
+			currentLine = stream.nextLine();
+			
+			this.analyze();
+			
+			if (isProperty) {
+				
+				PropertyNode property = new PropertyNode(currentLine);
+				
+				result.addNode(property);
+			}
+			
+		} while (!(currentLine.equals("End With")));
+		
+		return result;
+	}
+	
+	public IfNode parseIfBlock() {
+		
+		IfNode result = new IfNode(null, null, null);
+		
+		// TODO: implementation
+		
+		do {
+			
+			currentLine = stream.nextLine();
+			
+			this.analyze();
+			this.process(result);
+			
+		} while (!(currentLine.equals("End With")));
+		
+		return result;
+	}
+	
+	public SetNode parseSetStatement(String value) {
+		
+		SetNode result = null;
+		
+		String[] parts = value.split("=");
+		String left = parts[0].replace("Set ", "").trim();
+		String right = parts[1].trim();
+		
+		result = new SetNode(left, right);
+		
+		return result;
+	}
+	
+	public String[] splitStatement(String value) {
+		
+		String[] result = null;
+		
+		int length = value.length();
+		int index = value.indexOf("=");
+		
+		String left = value.substring(0, index).trim();
+		String right = value.substring(index + 2, length);
+		
+		if (containsComment) {
+			
+			right = Util.removeInlineComment(right);
+		}
+		
+		result = new String[] { left, right };
+		
+		return result;
+	}
+	
+	public ASTNode parseAssignment(String value) {
+		
+		ASTNode result = null;
+		
+		if (isSetStatement) {
+			
+			result = parseSetStatement(value);
+			
+			return result;
+		}
+		
+		String variableName = "";
+		String accessModifier = "";
+		String dataType = "";
+		String[] statement = splitStatement(value);
 		String comment = null;
 		
 		if (containsComment) {
 			
-			comment = "'" + tokens[1];
+			String[] parts = value.split("'");
+			
+			comment = parts[1];
 		}
 		
-		String leftSide = assignmentTokens[0];
-		String rightSide = assignmentTokens[1];
-		
-		String accessModifier = "";
-		String dataType = "";
-		
+		String leftSide = statement[0];
+		String rightSide = statement[1];
 		String[] leftSideParts = leftSide.split(" ");
-		
-		String variableName = "";
 		
 		boolean isConstant = false;
 		
-		if (leftSide.toUpperCase().startsWith("PUBLIC") ||
-			leftSide.toUpperCase().startsWith("PRIVATE")) {
+		if (leftSide.startsWith("Public ") || leftSide.startsWith("Private ")) {
 			
-			String[] leftParts = leftSide.split(" ");
-			
-			accessModifier = leftParts[0].trim();
+			accessModifier = leftSideParts[0].trim();
 		}
 		
 		if (leftSide.toUpperCase().contains("CONST")) {
@@ -236,74 +473,54 @@ public class Parser {
 			}
 		}
 		
+		// TODO: Declaration vs Variable?
+		//DeclarationNode declaration = new DeclarationNode();
 		VariableNode variable = new VariableNode(accessModifier, dataType, variableName, isConstant);
-		StringNode expression = new StringNode(rightSide.trim());
+		StringNode expression = new StringNode(rightSide);
 		
 		result = new AssignmentNode(variable, expression, comment);
 		
 		return result;
 	}
 	
-	public String[] delimited(String start, String end, String separator, String parser) {
+	private void checkBypass() {
 		
-		String[] result = new String[0];
-		boolean first = true;
+		if (isTopLevelNode) {
+			
+			bypassFuse[0] = true;
+		}
 		
-		// TODO: implementation
+		if (isBeginEndNode) {
+			
+			bypassFuse[1] = true;
+		}
 		
-		
-		return result;
+		bypassTopLevel = (bypassFuse[0] && bypassFuse[1]);
 	}
 	
-	public void maybeCall() {
-		
-		// TODO: implementation
-		
-	}
-	
-	private void analyze() {
+	private void processTopLevel() {
 		
 		isTopLevelNode = Util.isTopLevelNode(currentLine);
 		isBeginEndNode = Util.isBeginEndNode(currentLine);
-		isComment = Util.isComment(currentLine);
-		containsComment = Util.containsComment(currentLine);
-		isMethod = Util.isFunctionOrSub(currentLine);
-		isAssignment = Util.isAssignment(currentLine);
-		isDeclaration = Util.isDeclaration(currentLine);
-	}
-	
-	private void process(ProgramNode node) {
 		
-		if (containsComment) {
+		if (isTopLevelNode) {
 			
-			Token tokenPreserved = stream.readComment(true);
-			Token tokenDisacarded = stream.readComment(false);
+			program = new ProgramNode(currentLine);
+			
+			checkBypass();
+			
+			return;
 		}
 		
-		if (isComment) {
+		if (isBeginEndNode) {
 			
+			ProgramNode beginEnd = parseBeginEnd();
 			
-		}
-		
-		if (isDeclaration) {
+			program.addNode(beginEnd);
 			
-			DeclarationNode declaration = parseDeclaration(currentLine);
+			checkBypass();
 			
-			node.addNode(declaration);
-		}
-		
-		if (isMethod) {
-			
-			MethodNode method = parseMethod(currentLine);
-			
-			node.addNode(method);
-		}
-		
-		if (isAssignment) {
-			
-			AssignmentNode assignment = parseAssignment(currentLine);
-			
-			node.addNode(assignment);
+			return;
 		}
 	}
 	
@@ -313,24 +530,12 @@ public class Parser {
 			
 			currentLine = stream.nextLine();
 			
+			if (!bypassTopLevel) {
+				
+				processTopLevel();
+			}
+			
 			this.analyze();
-			
-			if (isTopLevelNode) {
-				
-				program = new ProgramNode(currentLine);
-				
-				continue;
-			}
-			
-			if (isBeginEndNode) {
-				
-				ProgramNode beginEnd = parseBeginEnd();
-				
-				program.addNode(beginEnd);
-				
-				continue;
-			}
-			
 			this.process(program);
 		}
 		
