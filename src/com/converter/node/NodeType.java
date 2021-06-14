@@ -9,8 +9,10 @@ public enum NodeType {
 	METHOD,
 	CALL,
 	IF,
+	WITH,
 	DECLARATION,
 	ASSIGNMENT,
+	SET,
 	TERM,
 	PARAMETER,
 	BINARY,
@@ -19,5 +21,8 @@ public enum NodeType {
 	COMMENT,
 	PROGRAM,
 	CLASS,
-	FORM
+	FORM,
+	PROPERTY,
+	BODY,
+	ERROR
 }
