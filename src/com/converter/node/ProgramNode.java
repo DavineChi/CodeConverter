@@ -11,16 +11,17 @@ public class ProgramNode extends ASTNode implements INodeCollection {
 	
 	public ProgramNode(String id) {
 		
-		this.nodeId = id;
-		this.nodeType = NodeType.PROGRAM;
-		this.capacity = INITIAL_CAPACITY;
-		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
-		this.size = 0;
+		this(id, null);
 	}
 	
 	public ProgramNode(String id, ASTNode node) {
 		
-		this(id);
+		this.nodeType = NodeType.PROGRAM;
+		this.nodeId = id;
+		this.capacity = INITIAL_CAPACITY;
+		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
+		this.size = 0;
+		
 		this.addNode(node);
 	}
 	
