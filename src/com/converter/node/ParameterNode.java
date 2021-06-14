@@ -16,6 +16,8 @@ public class ParameterNode extends ASTNode {
 	
 	public String getPassedBy() {
 		
+		// VB6 default is to pass arguments by reference (ByRef)
+		
 		return nodePassedBy;
 	}
 	
@@ -32,14 +34,6 @@ public class ParameterNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		String pass = nodePassedBy;
-		
-		if (nodePassedBy.equals("")) {
-			
-			// VB6 default is to pass arguments by reference (ByRef)
-			pass = "default";
-		}
-		
-		return "Passed: " + pass + ", Name: " + nodeName + ", Data Type: " + nodeDataType;
+		return nodeType.toString() + ":[" + nodeName + ":" + nodeDataType + "]";
 	}
 }

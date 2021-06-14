@@ -44,6 +44,18 @@ public class VariableNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":[" + nodeName + "]";
+		String output;
+		
+		if (nodeDataType.equals("")) {
+			
+			output = nodeType.toString() + ":[" + nodeName + "]";
+		}
+		
+		else {
+			
+			output = nodeType.toString() + ":[" + nodeName + ":" + nodeDataType + "]";
+		}
+		
+		return output;
 	}
 }
