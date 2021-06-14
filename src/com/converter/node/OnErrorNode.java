@@ -1,0 +1,33 @@
+package com.converter.node;
+
+public class OnErrorNode extends ASTNode {
+	
+	private String nodeFullStatement;
+	private String nodeGotoCall;
+	
+	public OnErrorNode(String fullStatement) {
+		
+		this.nodeType = NodeType.ERROR;
+		this.nodeFullStatement = fullStatement;
+		
+		String[] parts = fullStatement.split(" ");
+		
+		this.nodeGotoCall = parts[3];
+	}
+	
+	public String getFullStatement() {
+		
+		return nodeFullStatement;
+	}
+	
+	public String getGotoCall() {
+		
+		return nodeGotoCall;
+	}
+	
+	@Override
+	public String toString() {
+		
+		return nodeType.toString() + ":[" + nodeGotoCall + "]";
+	}
+}
