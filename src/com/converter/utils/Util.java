@@ -6,6 +6,87 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isOnErrorGoto(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("On Error GoTo ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isReturnStatement(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("Exit ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static String removeInlineComment(String value) {
+		
+		String result = "";
+		
+		String[] parts = value.split("'");
+		
+		result = parts[0].trim();
+		
+		return result;
+	}
+	
+	public static boolean isProperty(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith(".")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isIfBlock(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("If ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isWithBlock(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("With ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isCall(String value) {
+		
+		boolean result = false;
+		
+		// TODO: implementation
+		
+		
+		return result;
+	}
+	
 	public static boolean isBeginEndNode(String value) {
 		
 		boolean result = false;
@@ -70,6 +151,8 @@ public class Util {
 		
 		boolean result = false;
 		
+		//TokenInputStream.reportPosition();
+		
 		if (value.equals("")) {
 			
 			return result;
@@ -79,6 +162,18 @@ public class Util {
 		char ch = characters[characters.length - 1];
 		
 		if (ch == '_') {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isSetStatement(String value) {
+		
+		boolean result = false;
+		
+		if (Util.isAssignment(value) && value.startsWith("Set ")) {
 			
 			result = true;
 		}
@@ -158,17 +253,16 @@ public class Util {
 		
 		boolean result = false;
 		
-		String request = value.toUpperCase();		
-		String[] terms = new String[] { "PUBLIC SUB",
-                                        "PRIVATE SUB",
-                                        "PUBLIC FUNCTION",
-                                        "PRIVATE FUNCTION" };
+		String[] terms = new String[] { "Public Sub",
+                                        "Private Sub",
+                                        "Public Function",
+                                        "Private Function" };
 		
 		for (int i = 0; i < terms.length; i++) { 
 			
 			String term = terms[i];
 			
-			if (request.contains(term)) {
+			if (value.startsWith(term)) {
 				
 				result = true;
 				break;
@@ -182,10 +276,7 @@ public class Util {
 		
 		boolean result = false;
 		
-		String line = value.toUpperCase();
-		
-		if (line.contains("END FUNCTION") ||
-			line.contains("END SUB")) {
+		if (value.equals("End Function") || value.equals("End Sub")) {
 			
 			result = true;
 		}
@@ -263,11 +354,41 @@ public class Util {
 		
 		boolean result = false;
 		
+		int index = -1;
+
 		if (value.contains("'")) {
 			
+			index = value.indexOf("'");
 			result = true;
+			
+			if (value.contains("\"")) {
+				
+				// If odd-numbered quotation-marks, not a valid inline comment.
+				// If even-numbered, then it should be a valid inline comment.
+				
+				String check = value.substring(0, index);
+				
+				int count = 0;
+				
+				for (int i = 0; i < check.length(); i++) {
+					
+					String character = check.substring(i, (i + 1));
+					
+					if (character.equals("\"")) {
+						
+						count++;
+					}
+				}
+				
+				int modResult = count % 2;
+				
+				if (modResult > 0) {
+					
+					result = false;
+				}
+			}
 		}
-		
+				
 		return result;
 	}
 	
