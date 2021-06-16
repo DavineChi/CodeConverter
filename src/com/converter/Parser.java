@@ -1,6 +1,12 @@
 package com.converter;
 
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectInputStream;
+import java.io.ObjectOutputStream;
 import java.io.Serializable;
+
 import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
 import com.converter.node.BodyNode;
@@ -31,7 +37,9 @@ import com.converter.utils.Util;
  * 
  */
 public class Parser implements Serializable {
+	
 	private static final long serialVersionUID = 1L;
+	private static final String SERIALIZED_FILE = "ParseTree";
 	
 	private TokenInputStream stream;
 	private ProgramNode program;
@@ -549,13 +557,57 @@ public class Parser implements Serializable {
 		stream.close();
 	}
 	
+	private void load() {
+		
+        try {
+        	
+            FileInputStream file = new FileInputStream(SERIALIZED_FILE);
+            ObjectInputStream input = new ObjectInputStream(file);
+            
+            program = (ProgramNode)(input.readObject());
+            
+            input.close();
+        }
+        
+        catch (IOException ioEx) {
+        	
+            ioEx.printStackTrace();
+        }
+        
+        catch (ClassNotFoundException cnfEx) {
+        	
+            cnfEx.printStackTrace();
+        }
+	}
+	
+	private void save() {
+		
+        try {
+        	
+            FileOutputStream file = new FileOutputStream(SERIALIZED_FILE);
+            ObjectOutputStream output = new ObjectOutputStream(file);
+            
+            output.writeObject(program);
+            file.close();
+        }
+        
+        catch (IOException ex) {
+        	
+            ex.printStackTrace();
+        }
+	}
+	
 	public static void main(String[] args) {
 		
 		Parser parser = new Parser("main/resources/CEto.cls");
 		
 		parser.start();
-		
+		//parser.save();
 		parser.exit();
+		
+		//parser.load();
+		
+		String stop = "";
 	}
 }
 
