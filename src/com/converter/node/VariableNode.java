@@ -1,6 +1,10 @@
 package com.converter.node;
 
-public class VariableNode extends ASTNode {
+import java.io.Serializable;
+
+public class VariableNode extends ASTNode implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private String nodeAccessModifier;
 	private String nodeDataType;

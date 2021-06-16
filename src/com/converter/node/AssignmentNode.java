@@ -1,6 +1,10 @@
 package com.converter.node;
 
-public class AssignmentNode extends ASTNode {
+import java.io.Serializable;
+
+public class AssignmentNode extends ASTNode implements Serializable {
+	
+	private static final long serialVersionUID = 1L;
 	
 	private String nodeOperator = "=";
 	private ASTNode nodeLeft;

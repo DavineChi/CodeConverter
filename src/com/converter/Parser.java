@@ -1,5 +1,6 @@
 package com.converter;
 
+import java.io.Serializable;
 import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
 import com.converter.node.BodyNode;
@@ -29,7 +30,8 @@ import com.converter.utils.Util;
  * http://lisperator.net/pltut/parser/
  * 
  */
-public class Parser {
+public class Parser implements Serializable {
+	private static final long serialVersionUID = 1L;
 	
 	private TokenInputStream stream;
 	private ProgramNode program;
