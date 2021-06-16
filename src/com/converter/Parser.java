@@ -235,7 +235,7 @@ public class Parser {
 				String parameterName = "";
 				String dataType = "";
 				
-				if (first.equals("ByRef") || first.equals("ByVal")) {
+				if (first.equals("ByRef") || first.equals("ByVal") || first.equals("Optional")) {
 					
 					passedBy = first;
 					parameterName = second;
