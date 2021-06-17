@@ -6,6 +6,55 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static String getErrorHandlerErrorDescription(String value) {
+		
+		String result = null;
+		
+		if (value.startsWith("Err.Raise ")) {
+			
+			String[] parts = value.split(",");
+			
+			String first = parts[0];
+			String second = parts[1];
+			String third = parts[2];
+			
+			if (first.contains("Err.Number") && third.contains("Err.Description")) {
+				
+				result = second.trim();
+			}
+		}
+		
+		return result;
+	}
+	
+	public static boolean isErrorHandler(String value) {
+		
+		boolean result = false;
+		
+		int length = value.length();
+		String last = value.substring(length - 1);
+		
+		if (value.startsWith("EH_") && last.equals(":")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static String getIfCondition(String value) {
+		
+		String result = "";
+		
+		int startIndex = 3;
+		int endIndex = value.indexOf(" Then");
+		
+		// 'result' could be an ExpressionNode or a CallNode, or possibly something else
+		result = value.substring(startIndex, endIndex);
+		
+		return result;
+	}
+	
 	public static boolean isOnErrorGoto(String value) {
 		
 		boolean result = false;
@@ -184,6 +233,11 @@ public class Util {
 	public static boolean isAssignment(String value) {
 		
 		boolean result = false;
+		
+		if (value.startsWith("If ")) {
+			
+			return false;
+		}
 		
 		if (value.contains("=")) {
 			
