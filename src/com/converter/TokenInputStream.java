@@ -25,7 +25,6 @@ public class TokenInputStream implements Serializable {
 	private String delimiter;
 	private String streamLine;
 	private String[] tokens;
-	private Token current;
 	
 	private boolean lineHasContinuation;
 	
