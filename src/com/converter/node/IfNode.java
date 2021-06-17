@@ -56,6 +56,6 @@ public class IfNode extends ASTNode implements Serializable {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":[" + nodeCondition + " (" + size + " lines)]";
+		return nodeType.toString() + ":[" + nodeCondition + "]";
 	}
 }
