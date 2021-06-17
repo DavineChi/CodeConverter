@@ -9,6 +9,8 @@ public enum NodeType {
 	METHOD,
 	CALL,
 	IF,
+	THEN,
+	ELSE,
 	WITH,
 	DECLARATION,
 	ASSIGNMENT,
@@ -25,4 +27,5 @@ public enum NodeType {
 	PROPERTY,
 	BODY,
 	ONERRORGOTO,
+	ERRORHANDLER
 }
