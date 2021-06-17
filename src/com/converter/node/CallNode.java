@@ -2,6 +2,8 @@ package com.converter.node;
 
 public class CallNode extends ASTNode {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private ASTNode nodeFunction;
 	private ASTNode[] nodeArguments;
 	

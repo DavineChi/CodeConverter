@@ -2,6 +2,8 @@ package com.converter.node;
 
 public class ExpressionNode extends ASTNode {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private String nodeOperator;
 	private ASTNode nodeLeft;
 	private ASTNode nodeRight;

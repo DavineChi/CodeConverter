@@ -2,6 +2,8 @@ package com.converter.node;
 
 public class TermNode extends ASTNode {
 	
+	private static final long serialVersionUID = 1L;
+	
 	private String nodeAccessModifier;
 	private String nodeDataType;
 	private String nodeValue;
