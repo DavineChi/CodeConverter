@@ -12,6 +12,7 @@ import com.converter.node.AssignmentNode;
 import com.converter.node.BodyNode;
 import com.converter.node.CommentNode;
 import com.converter.node.DeclarationNode;
+import com.converter.node.ElseResultNode;
 import com.converter.node.ExpressionNode;
 import com.converter.node.INodeCollection;
 import com.converter.node.IfNode;
@@ -22,6 +23,7 @@ import com.converter.node.ProgramNode;
 import com.converter.node.PropertyNode;
 import com.converter.node.SetNode;
 import com.converter.node.StringNode;
+import com.converter.node.ThenResultNode;
 import com.converter.node.VariableNode;
 import com.converter.node.WithNode;
 import com.converter.utils.DataType;
@@ -39,7 +41,7 @@ import com.converter.utils.Util;
 public class Parser implements Serializable {
 	
 	private static final long serialVersionUID = 1L;
-	private static final String SERIALIZED_FILE = "ParseTree";
+	private static final String SERIALIZED_FILE = "ParseTree.ser";
 	
 	private TokenInputStream stream;
 	private ProgramNode program;
@@ -152,12 +154,12 @@ public class Parser implements Serializable {
 			node.addNode(withNode);
 		}
 		
-//		if (isIfBlock) {
-//			
-//			IfNode ifNode = parseIfBlock();
-//			
-//			node.addNode(ifNode);
-//		}
+		if (isIfBlock) {
+			
+			IfNode ifNode = parseIfBlock();
+			
+			node.addNode(ifNode);
+		}
 		
 		if (isCall) {
 			
@@ -171,6 +173,48 @@ public class Parser implements Serializable {
 			
 			node.addNode(error);
 		}
+	}
+	
+	@SuppressWarnings("unused")
+	private void load() {
+		
+        try {
+        	
+            FileInputStream file = new FileInputStream(SERIALIZED_FILE);
+            ObjectInputStream input = new ObjectInputStream(file);
+            
+            program = (ProgramNode)(input.readObject());
+            
+            input.close();
+        }
+        
+        catch (IOException ioEx) {
+        	
+            ioEx.printStackTrace();
+        }
+        
+        catch (ClassNotFoundException cnfEx) {
+        	
+            cnfEx.printStackTrace();
+        }
+	}
+	
+	@SuppressWarnings("unused")
+	private void save() {
+		
+        try {
+        	
+            FileOutputStream file = new FileOutputStream(SERIALIZED_FILE);
+            ObjectOutputStream output = new ObjectOutputStream(file);
+            
+            output.writeObject(program);
+            file.close();
+        }
+        
+        catch (IOException ex) {
+        	
+            ex.printStackTrace();
+        }
 	}
 	
 	public ProgramNode parseBeginEnd() {
@@ -368,18 +412,53 @@ public class Parser implements Serializable {
 	
 	public IfNode parseIfBlock() {
 		
-		IfNode result = new IfNode(null, null, null);
+		IfNode result = null;
 		
-		// TODO: implementation
+		ThenResultNode thenResult = new ThenResultNode();
+		ElseResultNode elseResult = new ElseResultNode();
 		
-		do {
+		String condition = Util.getIfCondition(currentLine);
+		String[] parts = condition.split(" ");
+		
+		ExpressionNode expression = null;
+		StringNode left = null;
+		StringNode right = null;
+		
+		String relationalOperator = parts[1];
+		
+		boolean isRelOp = Util.isRelationalOperator(relationalOperator);
+		
+		if (isRelOp) {
+			
+			left = new StringNode(parts[0]);
+			right = new StringNode(parts[2]);
+			expression = new ExpressionNode(relationalOperator, left, right);
+			
+			result = new IfNode(expression, null, null);
+		}
+		
+		
+		while (!(currentLine.equals("Else"))) {
 			
 			currentLine = stream.nextLine();
 			
 			this.analyze();
-			this.process(result);
+			this.process(thenResult);
+		}
+		
+		if (currentLine.equals("Else")) {
 			
-		} while (!(currentLine.equals("End With")));
+			while (!(currentLine.equals("End If"))) {
+				
+				currentLine = stream.nextLine();
+				
+				this.analyze();
+				this.process(elseResult);
+			}
+		}
+		
+		result.setThenResult(thenResult);
+		result.setElseResult(elseResult);
 		
 		return result;
 	}
@@ -549,52 +628,13 @@ public class Parser implements Serializable {
 			this.process(program);
 		}
 		
+		@SuppressWarnings("unused")
 		int stop = 0;
 	}
 	
 	public void exit() {
 		
 		stream.close();
-	}
-	
-	private void load() {
-		
-        try {
-        	
-            FileInputStream file = new FileInputStream(SERIALIZED_FILE);
-            ObjectInputStream input = new ObjectInputStream(file);
-            
-            program = (ProgramNode)(input.readObject());
-            
-            input.close();
-        }
-        
-        catch (IOException ioEx) {
-        	
-            ioEx.printStackTrace();
-        }
-        
-        catch (ClassNotFoundException cnfEx) {
-        	
-            cnfEx.printStackTrace();
-        }
-	}
-	
-	private void save() {
-		
-        try {
-        	
-            FileOutputStream file = new FileOutputStream(SERIALIZED_FILE);
-            ObjectOutputStream output = new ObjectOutputStream(file);
-            
-            output.writeObject(program);
-            file.close();
-        }
-        
-        catch (IOException ex) {
-        	
-            ex.printStackTrace();
-        }
 	}
 	
 	public static void main(String[] args) {
@@ -606,8 +646,6 @@ public class Parser implements Serializable {
 		parser.exit();
 		
 		//parser.load();
-		
-		String stop = "";
 	}
 }
 
