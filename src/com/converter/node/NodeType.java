@@ -24,5 +24,5 @@ public enum NodeType {
 	FORM,
 	PROPERTY,
 	BODY,
-	ERROR
+	ONERRORGOTO,
 }

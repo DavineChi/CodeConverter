@@ -11,7 +11,7 @@ public class OnErrorNode extends ASTNode implements Serializable {
 	
 	public OnErrorNode(String fullStatement) {
 		
-		this.nodeType = NodeType.ERROR;
+		this.nodeType = NodeType.ONERRORGOTO;
 		this.nodeFullStatement = fullStatement;
 		
 		String[] parts = fullStatement.split(" ");
