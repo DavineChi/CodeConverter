@@ -11,6 +11,11 @@ public class IfNode extends ASTNode implements INodeCollection {
 	private int capacity;
 	private int size;
 	
+	public IfNode(ASTNode condition) {
+		
+		this(condition, null, null);
+	}
+	
 	public IfNode(ASTNode condition, ASTNode thenResult) {
 		
 		this(condition, thenResult, null);
