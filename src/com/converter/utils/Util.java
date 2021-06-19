@@ -6,6 +6,18 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isBlankLine(String value) {
+		
+		boolean result = false;
+		
+		if (value.equals("")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static String getErrorHandlerErrorDescription(String value) {
 		
 		String result = null;
