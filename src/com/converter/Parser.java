@@ -9,6 +9,7 @@ import java.io.Serializable;
 
 import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
+import com.converter.node.BlankLineNode;
 import com.converter.node.BodyNode;
 import com.converter.node.CommentNode;
 import com.converter.node.DeclarationNode;
@@ -65,6 +66,7 @@ public class Parser implements Serializable {
 	private boolean isReturnStatement;
 	private boolean isOnErrorGoto;
 	private boolean isEndOfFunctionOrSub;
+	private boolean isBlankLine;
 	
 	public Parser(String filename) {
 		
@@ -88,6 +90,7 @@ public class Parser implements Serializable {
 		this.isProperty = false;
 		this.isReturnStatement = false;
 		this.isOnErrorGoto = false;
+		this.isBlankLine = false;
 	}
 	
 	private void analyze() {
@@ -105,6 +108,7 @@ public class Parser implements Serializable {
 		isReturnStatement = Util.isReturnStatement(currentLine);
 		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
 		isEndOfFunctionOrSub = Util.isEndOfFunctionOrSub(currentLine);
+		isBlankLine = Util.isBlankLine(currentLine);
 	}
 	
 	private void process(INodeCollection node) {
@@ -172,6 +176,11 @@ public class Parser implements Serializable {
 			OnErrorNode error = new OnErrorNode(currentLine);
 			
 			node.addNode(error);
+		}
+		
+		if (isBlankLine) {
+			
+			node.addNode(new BlankLineNode());
 		}
 	}
 	
