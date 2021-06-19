@@ -40,8 +40,8 @@ import com.converter.utils.Util;
  */
 public class Parser implements Serializable {
 	
-	private static final long serialVersionUID = 1L;
 	private static final String SERIALIZED_FILE = "ParseTree.ser";
+	private static final long serialVersionUID = 1L;
 	
 	private TokenInputStream stream;
 	private ProgramNode program;
