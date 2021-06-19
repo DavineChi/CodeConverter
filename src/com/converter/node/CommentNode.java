@@ -1,9 +1,7 @@
 package com.converter.node;
 
-import java.io.Serializable;
-
-public class CommentNode extends ASTNode implements Serializable {
-
+public class CommentNode extends ASTNode {
+	
 	private static final long serialVersionUID = 1L;
 	
 	private String nodeComment;

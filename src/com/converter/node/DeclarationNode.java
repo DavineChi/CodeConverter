@@ -1,8 +1,6 @@
 package com.converter.node;
 
-import java.io.Serializable;
-
-public class DeclarationNode extends ASTNode implements Serializable {
+public class DeclarationNode extends ASTNode {
 	
 	private static final long serialVersionUID = 1L;
 	

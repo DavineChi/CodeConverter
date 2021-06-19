@@ -1,10 +1,9 @@
 package com.converter.node;
 
-import java.io.Serializable;
 import java.util.Arrays;
 
-public class ElseResultNode extends ASTNode implements INodeCollection, Serializable {
-
+public class ElseResultNode extends ASTNode implements INodeCollection {
+	
 	private static final long serialVersionUID = 1L;
 	
 	private ASTNode[] nodeNodes;
