@@ -166,11 +166,24 @@ public class Util {
 		return result;
 	}
 	
-	public static boolean isCall(String value) {
+	public static boolean isPropertyCall(String value) {
+		
+		boolean result = false;
+		
+		if (value.contains(".Close") || value.contains(".Execute") || value.contains(".Write ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isMethodCall(String value) {
 		
 		boolean result = false;
 		
 		// TODO: implementation
+		
 		
 		
 		return result;
