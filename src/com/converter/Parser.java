@@ -61,7 +61,8 @@ public class Parser implements Serializable {
 	private boolean isSetStatement;
 	private boolean isWithBlock;
 	private boolean isIfBlock;
-	private boolean isCall;
+	private boolean isMethodCall;
+	private boolean isPropertyCall;
 	private boolean isProperty;
 	private boolean isReturnStatement;
 	private boolean isOnErrorGoto;
@@ -86,7 +87,8 @@ public class Parser implements Serializable {
 		this.isSetStatement = false;
 		this.isWithBlock = false;
 		this.isIfBlock = false;
-		this.isCall = false;
+		this.isMethodCall = false;
+		this.isPropertyCall = false;
 		this.isProperty = false;
 		this.isReturnStatement = false;
 		this.isOnErrorGoto = false;
@@ -103,7 +105,8 @@ public class Parser implements Serializable {
 		isSetStatement = Util.isSetStatement(currentLine);
 		isWithBlock = Util.isWithBlock(currentLine);
 		isIfBlock = Util.isIfBlock(currentLine);
-		isCall = Util.isCall(currentLine);
+		isMethodCall = Util.isMethodCall(currentLine);
+		isPropertyCall = Util.isPropertyCall(currentLine);
 		isProperty = Util.isProperty(currentLine);
 		isReturnStatement = Util.isReturnStatement(currentLine);
 		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
@@ -165,7 +168,13 @@ public class Parser implements Serializable {
 			node.addNode(ifNode);
 		}
 		
-		if (isCall) {
+		if (isMethodCall) {
+			
+			// TODO: implementation
+			
+		}
+		
+		if (isPropertyCall) {
 			
 			// TODO: implementation
 			
