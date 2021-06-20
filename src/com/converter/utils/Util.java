@@ -304,26 +304,7 @@ public class Util {
 		
 		if (value.contains("\"")) {
 			
-			char[] characters = value.toCharArray();
-			int count = 0;
-			int remainder = 0;
-			
-			for (int i = 0; i < characters.length; i++) {
-				
-				char item = characters[i];
-				
-				if (item == '"') {
-					
-					count++;
-				}
-			}
-			
-			remainder = count % 2;
-			
-			if (remainder == 0) {
-				
-				result = true;
-			}
+			result = Util.isBalanced(value, '"');
 		}
 		
 		return result;
