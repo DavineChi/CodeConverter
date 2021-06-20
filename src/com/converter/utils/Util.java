@@ -311,6 +311,34 @@ public class Util {
 		return result;
 	}
 	
+	public static boolean isBalancedParenthesis(String value) {
+		
+		boolean result = false;
+		
+		char[] characters = value.toCharArray();
+		int countLeft = 0;
+		int countRight = 0;
+		
+		for (int i = 0; i < characters.length; i++) {
+			
+			char candidate = characters[i];
+			
+			if (candidate == '(') {
+				
+				countLeft++;
+			}
+			
+			if (candidate == ')') {
+				
+				countRight++;
+			}
+		}
+		
+		result = (countLeft == countRight);
+		
+		return result;
+	}
+	
 	public static boolean isBalancedQuotationMarks(String value) {
 		
 		boolean result = false;
