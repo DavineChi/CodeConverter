@@ -6,6 +6,34 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isBalanced(String value, char character) {
+		
+		boolean result = false;
+		
+		char[] characters = value.toCharArray();
+		int count = 0;
+		int remainder = 0;
+		
+		for (int i = 0; i < characters.length; i++) {
+			
+			char item = characters[i];
+			
+			if (item == character) {
+				
+				count++;
+			}
+		}
+		
+		remainder = count % 2;
+		
+		if (remainder == 0) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static boolean isBlankLine(String value) {
 		
 		boolean result = false;
