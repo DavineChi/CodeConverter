@@ -69,37 +69,49 @@ public class Util {
 		return result;
 	}
 	
-	public static String getErrorHandlerErrorDescription(String value) {
+	public static String getErrorHandlerErrDescription(String value) {
 		
 		String result = null;
 		
-		if (value.startsWith("Err.Raise ")) {
+		String[] parts = value.split(",");
+		
+		String first = parts[0];
+		String second = parts[1];
+		String third = parts[2];
+		
+		if (first.contains("Err.Number") && third.contains("Err.Description")) {
 			
-			String[] parts = value.split(",");
-			
-			String first = parts[0];
-			String second = parts[1];
-			String third = parts[2];
-			
-			if (first.contains("Err.Number") && third.contains("Err.Description")) {
-				
-				result = second.trim();
-			}
+			result = second.trim();
 		}
 		
 		return result;
 	}
 	
-	public static boolean isErrorHandler(String value) {
+	public static boolean isErrorHandlerErrRaise(String value) {
 		
 		boolean result = false;
 		
-		int length = value.length();
-		String last = value.substring(length - 1);
-		
-		if (value.startsWith("EH_") && last.equals(":")) {
+		if (value.startsWith("Err.Raise ")) {
 			
 			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isErrorHandlerHandle(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("EH_")) {
+			
+			int length = value.length();
+			String last = value.substring(length - 1);
+			
+			if (last.equals(":")) {
+				
+				result = true;
+			}
 		}
 		
 		return result;
