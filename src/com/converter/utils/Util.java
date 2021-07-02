@@ -142,7 +142,7 @@ public class Util {
 		return result;
 	}
 	
-	public static boolean isReturnStatement(String value) {
+	public static boolean isTermination(String value) {
 		
 		boolean result = false;
 		
