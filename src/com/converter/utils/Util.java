@@ -274,8 +274,6 @@ public class Util {
 		
 		boolean result = false;
 		
-		//TokenInputStream.reportPosition();
-		
 		if (value.equals("")) {
 			
 			return result;
