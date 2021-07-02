@@ -265,6 +265,8 @@ public class TokenInputStream implements Serializable {
 			
 			streamLine = reader.readLine();
 			
+			TokenInputStream.reportPosition();
+			
 			lineHasContinuation = Util.hasLineContinuation(streamLine);
 			
 			if (lineHasContinuation) {
