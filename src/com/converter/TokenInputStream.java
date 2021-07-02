@@ -276,15 +276,12 @@ public class TokenInputStream implements Serializable {
 		return streamLine.trim();
 	}
 	
-	public String[] splitValue(String value) {
-		
-		String[] result = null;
-		
-		result = value.split(delimiter);
-		
-		return result;
-	}
-	
+	/********************************************************************************************
+	 * Returns whether end of the underlying stream of this TokenInputStream is reached.
+	 * 
+	 * @return
+	 *   True if the end of file is reached, false otherwise.
+	 */
 	public boolean eof() {
 		
 		String line = this.peekLine();
