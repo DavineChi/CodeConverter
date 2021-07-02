@@ -8,7 +8,6 @@ public class BodyNode extends ASTNode implements INodeCollection {
 	
 	private String nodeId;
 	private ASTNode[] nodeNodes;
-	private String nodeReturnStatement;
 	private int capacity;
 	private int size;
 	
@@ -31,16 +30,6 @@ public class BodyNode extends ASTNode implements INodeCollection {
 	public ASTNode[] getNodes() {
 		
 		return nodeNodes;
-	}
-	
-	public String getReturnStatement() {
-		
-		return nodeReturnStatement;
-	}
-	
-	public void setReturnStatement(String returnStatement) {
-		
-		this.nodeReturnStatement = returnStatement;
 	}
 	
 	@Override
