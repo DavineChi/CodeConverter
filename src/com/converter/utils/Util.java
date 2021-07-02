@@ -238,9 +238,7 @@ public class Util {
 		
 		boolean result = false;
 		
-		String request = value.toUpperCase();
-		
-		if (request.startsWith("DIM") && request.contains(" AS ")) {
+		if (value.startsWith("Dim ") && value.contains(" As ")) {
 			
 			result = true;
 		}
@@ -354,9 +352,7 @@ public class Util {
 		
 		boolean result = false;
 		
-		String line = value.trim().toUpperCase();
-		
-		if (line.startsWith("DIM ")) {
+		if (value.startsWith("Dim ")) {
 			
 			result = true;
 		}
