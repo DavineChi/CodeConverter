@@ -1,6 +1,5 @@
 package com.converter.utils;
 
-import com.converter.Token;
 import com.converter.node.ASTNode;
 import com.converter.node.NodeType;
 
