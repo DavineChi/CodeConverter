@@ -1,5 +1,7 @@
 package com.converter.node;
 
+import com.converter.TokenInputStream;
+
 public class MethodNode extends ASTNode {
 	
 	private static final long serialVersionUID = 1L;
@@ -19,6 +21,7 @@ public class MethodNode extends ASTNode {
                       ASTNode body) {
 		
 		this.nodeType = NodeType.METHOD;
+		this.lineNumber = TokenInputStream.getLineNumber();
 		this.nodeAccessModifier = accessModifier;
 		this.nodeCallType = callType;
 		this.nodeReturnType = returnType;
@@ -60,6 +63,6 @@ public class MethodNode extends ASTNode {
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":[" + nodeName + "]";
+		return nodeType.toString() + ":[" + nodeName + "] (line " + lineNumber + ")";
 	}
 }
