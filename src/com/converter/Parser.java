@@ -9,10 +9,17 @@ import java.io.Serializable;
 
 import com.converter.node.ASTNode;
 import com.converter.node.AssignmentNode;
+import com.converter.node.AttributeNode;
 import com.converter.node.BlankLineNode;
 import com.converter.node.BodyNode;
+import com.converter.node.BooleanNode;
+import com.converter.node.CaseNode;
 import com.converter.node.CommentNode;
+import com.converter.node.ConstantNode;
 import com.converter.node.DeclarationNode;
+import com.converter.node.DoUntilNode;
+import com.converter.node.EHBlockNode;
+import com.converter.node.ElseIfResultNode;
 import com.converter.node.ElseResultNode;
 import com.converter.node.ExpressionNode;
 import com.converter.node.INodeCollection;
@@ -21,9 +28,12 @@ import com.converter.node.MethodNode;
 import com.converter.node.OnErrorNode;
 import com.converter.node.ParameterNode;
 import com.converter.node.ProgramNode;
+import com.converter.node.PropertyCallNode;
 import com.converter.node.PropertyNode;
+import com.converter.node.SelectCaseNode;
 import com.converter.node.SetNode;
 import com.converter.node.StringNode;
+import com.converter.node.TerminationNode;
 import com.converter.node.ThenResultNode;
 import com.converter.node.VariableNode;
 import com.converter.node.WithNode;
@@ -51,6 +61,8 @@ public class Parser implements Serializable {
 	private boolean[] bypassFuse;
 	private boolean bypassTopLevel;
 	
+	private boolean inMethodBody;
+	
 	private boolean isTopLevelNode;
 	private boolean isBeginEndNode;
 	private boolean isComment;
@@ -61,13 +73,14 @@ public class Parser implements Serializable {
 	private boolean isSetStatement;
 	private boolean isWithBlock;
 	private boolean isIfBlock;
-	private boolean isMethodCall;
 	private boolean isPropertyCall;
 	private boolean isProperty;
-	private boolean isReturnStatement;
+	private boolean isTermination;
 	private boolean isOnErrorGoto;
-	private boolean isEndOfFunctionOrSub;
 	private boolean isBlankLine;
+	private boolean isSelectCase;
+	private boolean isErrorHandlerHandle;
+	private boolean isDoUntil;
 	
 	public Parser(String filename) {
 		
@@ -82,17 +95,20 @@ public class Parser implements Serializable {
 		this.isComment = false;
 		this.containsComment = false;
 		this.isMethod = false;
+		this.inMethodBody = false;
 		this.isAssignment = false;
 		this.isDeclaration = false;
 		this.isSetStatement = false;
 		this.isWithBlock = false;
 		this.isIfBlock = false;
-		this.isMethodCall = false;
 		this.isPropertyCall = false;
 		this.isProperty = false;
-		this.isReturnStatement = false;
+		this.isTermination = false;
 		this.isOnErrorGoto = false;
 		this.isBlankLine = false;
+		this.isSelectCase = false;
+		this.isErrorHandlerHandle = false;
+		this.isDoUntil = false;
 	}
 	
 	private void analyze() {
@@ -105,22 +121,41 @@ public class Parser implements Serializable {
 		isSetStatement = Util.isSetStatement(currentLine);
 		isWithBlock = Util.isWithBlock(currentLine);
 		isIfBlock = Util.isIfBlock(currentLine);
-		isMethodCall = Util.isMethodCall(currentLine);
 		isPropertyCall = Util.isPropertyCall(currentLine);
 		isProperty = Util.isProperty(currentLine);
-		isReturnStatement = Util.isReturnStatement(currentLine);
+		isTermination = Util.isTermination(currentLine);
 		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
-		isEndOfFunctionOrSub = Util.isEndOfFunctionOrSub(currentLine);
 		isBlankLine = Util.isBlankLine(currentLine);
+		isSelectCase = Util.isSelectCase(currentLine);
+		isErrorHandlerHandle = Util.isErrorHandlerHandle(currentLine);
+		isDoUntil = Util.isDoUntil(currentLine);
 	}
 	
 	private void process(INodeCollection node) {
+		
+		if (isTermination) {
+			
+			ASTNode termination = new TerminationNode(currentLine);
+			
+			node.addNode(termination);
+			
+			return;
+		}
+		
+		if (isBlankLine) {
+			
+			node.addNode(new BlankLineNode());
+			
+			return;
+		}
 		
 		if (isComment) {
 			
 			CommentNode comment = parseComment(currentLine);
 			
 			node.addNode(comment);
+			
+			return;
 		}
 		
 		if (isDeclaration) {
@@ -128,6 +163,8 @@ public class Parser implements Serializable {
 			DeclarationNode declaration = parseDeclaration(currentLine);
 			
 			node.addNode(declaration);
+			
+			return;
 		}
 		
 		if (isMethod) {
@@ -135,6 +172,8 @@ public class Parser implements Serializable {
 			MethodNode method = parseMethod(currentLine);
 			
 			node.addNode(method);
+			
+			return;
 		}
 		
 		if (isAssignment) {
@@ -152,6 +191,8 @@ public class Parser implements Serializable {
 			}
 			
 			node.addNode(result);
+			
+			return;
 		}
 		
 		if (isWithBlock) {
@@ -159,25 +200,30 @@ public class Parser implements Serializable {
 			WithNode withNode = parseWithBlock();
 			
 			node.addNode(withNode);
+			
+			return;
 		}
 		
 		if (isIfBlock) {
 			
-			IfNode ifNode = parseIfBlock();
+			ASTNode expression = getIfCondition(currentLine);
+			
+			IfNode ifNode = new IfNode(expression);
+			
+			parseIfBlock(ifNode);
 			
 			node.addNode(ifNode);
-		}
-		
-		if (isMethodCall) {
 			
-			// TODO: implementation
-			
+			return;
 		}
 		
 		if (isPropertyCall) {
 			
-			// TODO: implementation
+			PropertyCallNode propertyCall = new PropertyCallNode(currentLine);
 			
+			node.addNode(propertyCall);
+			
+			return;
 		}
 		
 		if (isOnErrorGoto) {
@@ -185,11 +231,35 @@ public class Parser implements Serializable {
 			OnErrorNode error = new OnErrorNode(currentLine);
 			
 			node.addNode(error);
+			
+			return;
 		}
 		
-		if (isBlankLine) {
+		if (isSelectCase) {
 			
-			node.addNode(new BlankLineNode());
+			SelectCaseNode selectCase = parseSelectCase();
+			
+			node.addNode(selectCase);
+			
+			return;
+		}
+		
+		if (isErrorHandlerHandle && inMethodBody) {
+			
+			EHBlockNode handle = parseEHBlock();
+			
+			node.addNode(handle);
+			
+			return;
+		}
+		
+		if (isDoUntil) {
+			
+			DoUntilNode doUntil = parseDoUntil();
+			
+			node.addNode(doUntil);
+			
+			return;
 		}
 	}
 	
@@ -233,6 +303,26 @@ public class Parser implements Serializable {
         	
             ex.printStackTrace();
         }
+	}
+	
+	private String[] splitStatement(String value) {
+		
+		String[] result = null;
+		
+		int length = value.length();
+		int index = value.indexOf("=");
+		
+		String left = value.substring(0, index).trim();
+		String right = value.substring(index + 2, length);
+		
+		if (containsComment) {
+			
+			right = Util.removeInlineComment(right);
+		}
+		
+		result = new String[] { left, right };
+		
+		return result;
 	}
 	
 	public ProgramNode parseBeginEnd() {
@@ -327,23 +417,33 @@ public class Parser implements Serializable {
 		return result;
 	}
 	
-	public BodyNode collectBody(String name) {
+	public BodyNode collectMethodBody(String name) {
 		
 		BodyNode result = new BodyNode(name);
 		
-		do {
+		inMethodBody = true;
+		
+		while (true) {
+
+			boolean stop = Util.isEndOfFunctionOrSub(currentLine);
+			
+			if (stop) {
+				
+				break;
+			}
 			
 			currentLine = stream.nextLine();
 			
 			this.analyze();
 			this.process(result);
 			
-			if (isReturnStatement) {
+			if (isTermination) {
 				
-				result.setReturnStatement(currentLine);
+				ASTNode node = new TerminationNode(currentLine);
+				
+				result.addNode(node);
 			}
-			
-		} while (!isEndOfFunctionOrSub);
+		}
 		
 		return result;
 	}
@@ -384,7 +484,9 @@ public class Parser implements Serializable {
 		}
 		
 		ParameterNode[] parameters = collectParameters(value);
-		BodyNode methodBody = collectBody(callName);
+		BodyNode methodBody = collectMethodBody(callName);
+		
+		inMethodBody = false;
 		
 		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, methodBody);
 		
@@ -395,8 +497,83 @@ public class Parser implements Serializable {
 		
 		ExpressionNode result = null;
 		
-		// TODO: implementation
+		// TODO: parseExpression implementation
 		
+		
+		return result;
+	}
+	
+	private CaseNode collectCaseBlock() {
+		
+		CaseNode result = null;
+		
+		String lookupValue = "Case ";
+		String expression = currentLine.replace(lookupValue, "");
+		
+		result = new CaseNode(expression);
+		
+//		boolean endCaseBlock = false;
+		
+		while (true) {
+			
+//			String peek = stream.peekLine();
+//			
+//			endCaseBlock = peek.startsWith(lookupValue);
+//			
+//			if (endCaseBlock) {
+//				
+//				break;
+//			}
+			
+			boolean stop = currentLine.equals("End Select");
+			
+			if (stop) {
+				
+				break;
+			}
+			
+			currentLine = stream.nextLine();
+			
+			this.analyze();
+			this.process(result);
+		}
+		
+		return result;
+	}
+	
+	public SelectCaseNode parseSelectCase() {
+		
+		SelectCaseNode result = null;
+		
+		String expression = currentLine.replace("Select Case ", "");
+		
+		result = new SelectCaseNode(expression);
+		
+		boolean endSelectCase = false;
+		boolean isCaseBlock = false;
+		
+		while (true) {
+			
+			currentLine = stream.nextLine();
+			
+			endSelectCase = currentLine.equals("End Select");
+			isCaseBlock = currentLine.startsWith("Case ");
+			
+			if (endSelectCase) {
+				
+				break;
+			}
+			
+			if (isCaseBlock) {
+				
+				CaseNode caseNode = collectCaseBlock();
+				
+				result.addNode(caseNode);
+			}
+			
+			this.analyze();
+			this.process(result);
+		}
 		
 		return result;
 	}
@@ -428,57 +605,110 @@ public class Parser implements Serializable {
 		return result;
 	}
 	
-	public IfNode parseIfBlock() {
+	private ASTNode getIfCondition(String value) {
 		
-		IfNode result = null;
+		ASTNode result = null;
 		
-		ThenResultNode thenResult = new ThenResultNode();
-		ElseResultNode elseResult = new ElseResultNode();
+		String ifCondition = Util.getIfCondition(currentLine);
+		String[] parts = ifCondition.split(" ");
 		
-		String condition = Util.getIfCondition(currentLine);
-		String[] parts = condition.split(" ");
-		
-		ExpressionNode expression = null;
 		StringNode left = null;
 		StringNode right = null;
 		
-		String relationalOperator = parts[1];
+		String operator = null;
+		boolean isRelOp = false;
 		
-		boolean isRelOp = Util.isRelationalOperator(relationalOperator);
+		if (parts.length > 1) {
+			
+			operator = parts[1];
+			isRelOp = Util.isRelationalOperator(operator);
+		}
 		
 		if (isRelOp) {
 			
 			left = new StringNode(parts[0]);
 			right = new StringNode(parts[2]);
-			expression = new ExpressionNode(relationalOperator, left, right);
-			
-			result = new IfNode(expression, null, null);
+			result = new ExpressionNode(operator, left, right);
 		}
 		
+		else {
+			
+			result = new BooleanNode(ifCondition);
+		}
 		
-		while (!(currentLine.equals("Else"))) {
+		return result;
+	}
+	
+	public void parseIfBlock(IfNode node) {
+		
+		String id = node.getCondition().toString();
+		
+		INodeCollection thenResult = new ThenResultNode(id);
+		INodeCollection elseResult = new ElseResultNode();
+		INodeCollection elseIfResult = null;
+		
+		while (true) {
 			
 			currentLine = stream.nextLine();
+			
+			boolean stop = currentLine.equals("End If") ||
+                           currentLine.startsWith("ElseIf") ||
+                           currentLine.equals("Else");
+			
+			if (stop) {
+				
+				break;
+			}
 			
 			this.analyze();
 			this.process(thenResult);
 		}
 		
-		if (currentLine.equals("Else")) {
+		node.addNode((ASTNode)(thenResult));
+		
+		if (currentLine.startsWith("ElseIf")) {
 			
-			while (!(currentLine.equals("End If"))) {
+			ASTNode expression = getIfCondition(currentLine);
+			
+			elseIfResult = new ElseIfResultNode(expression);
+			
+			while (true) {
 				
 				currentLine = stream.nextLine();
+				
+				boolean stop = currentLine.equals("End If") || currentLine.equals("Else");
+				
+				if (stop) {
+					
+					break;
+				}
+				
+				this.analyze();
+				this.process(elseIfResult);
+			}
+			
+			node.addNode((ASTNode)(elseIfResult));
+		}
+		
+		if (currentLine.equals("Else")) {
+			
+			while (true) {
+				
+				currentLine = stream.nextLine();
+				
+				boolean stop = currentLine.equals("End If");
+				
+				if (stop) {
+					
+					break;
+				}
 				
 				this.analyze();
 				this.process(elseResult);
 			}
+			
+			node.addNode((ASTNode)(elseResult));
 		}
-		
-		result.setThenResult(thenResult);
-		result.setElseResult(elseResult);
-		
-		return result;
 	}
 	
 	public SetNode parseSetStatement(String value) {
@@ -494,29 +724,12 @@ public class Parser implements Serializable {
 		return result;
 	}
 	
-	public String[] splitStatement(String value) {
-		
-		String[] result = null;
-		
-		int length = value.length();
-		int index = value.indexOf("=");
-		
-		String left = value.substring(0, index).trim();
-		String right = value.substring(index + 2, length);
-		
-		if (containsComment) {
-			
-			right = Util.removeInlineComment(right);
-		}
-		
-		result = new String[] { left, right };
-		
-		return result;
-	}
-	
 	public ASTNode parseAssignment(String value) {
 		
 		ASTNode result = null;
+		
+		ASTNode leftNode = null;
+		ASTNode rightNode = null;
 		
 		if (isSetStatement) {
 			
@@ -525,9 +738,9 @@ public class Parser implements Serializable {
 			return result;
 		}
 		
-		String variableName = "";
-		String accessModifier = "";
-		String dataType = "";
+		String name = "";
+		String accessModifier = null;
+		String dataType = null;
 		String[] statement = splitStatement(value);
 		String comment = null;
 		
@@ -542,50 +755,141 @@ public class Parser implements Serializable {
 		String rightSide = statement[1];
 		String[] leftSideParts = leftSide.split(" ");
 		
-		boolean isConstant = false;
+		boolean isConstant = Util.isConstantDeclaration(leftSide);
+		boolean isAttribute = false;
 		
 		if (leftSide.startsWith("Public ") || leftSide.startsWith("Private ")) {
 			
 			accessModifier = leftSideParts[0].trim();
 		}
 		
-		if (leftSide.toUpperCase().contains("CONST")) {
+		if (leftSide.startsWith("Attribute ")) {
 			
-			isConstant = true;
+			name = leftSideParts[1].trim();
+			isAttribute = true;
 		}
 		
-		if (!accessModifier.equals("") && isConstant) {
+		else {
 			
-			variableName = leftSideParts[2];
-		}
-		
-		if (!accessModifier.equals("") && !isConstant) {
-			
-			variableName = leftSideParts[1];
-		}
-		
-		if (accessModifier.equals("")) {
-			
-			variableName = leftSideParts[0];
-		}
-		
-		for (int i = 0; i < DataType.LIST.length; i++) {
-			
-			String arg = DataType.LIST[i];
-			
-			if (leftSide.contains("As " + arg)) {
+			if ((accessModifier != null) && isConstant) {
 				
-				dataType = arg;
-				break;
+				name = leftSideParts[2];
+			}
+			
+			if ((accessModifier != null) && !isConstant) {
+				
+				name = leftSideParts[1];
+			}
+			
+			if ((accessModifier == null) && isConstant) {
+				
+				name = leftSideParts[1];
+			}
+			
+			if ((accessModifier == null) && !isConstant) {
+				
+				name = leftSideParts[0];
+			}
+			
+			for (int i = 0; i < DataType.LIST.length; i++) {
+				
+				String arg = DataType.LIST[i];
+				
+				if (leftSide.contains("As " + arg)) {
+					
+					dataType = arg;
+					break;
+				}
 			}
 		}
 		
-		// TODO: Declaration vs Variable?
-		//DeclarationNode declaration = new DeclarationNode();
-		VariableNode variable = new VariableNode(accessModifier, dataType, variableName, isConstant);
-		StringNode expression = new StringNode(rightSide);
+		if (isAttribute) {
+			
+			leftNode = new AttributeNode(name);
+		}
 		
-		result = new AssignmentNode(variable, expression, comment);
+		else if (isConstant) {
+			
+			leftNode = new ConstantNode(accessModifier, dataType, name);
+		}
+		
+		else {
+			
+			leftNode = new VariableNode(accessModifier, dataType, name);
+		}
+		
+		rightNode = new StringNode(rightSide);
+		
+		result = new AssignmentNode(leftNode, rightNode, comment);
+		
+		return result;
+	}
+	
+	public EHBlockNode parseEHBlock() {
+		
+		EHBlockNode result = null;
+		
+		boolean isErrRaise = false;
+		boolean endOfMethod = false;
+		
+		String id = currentLine.replace(":", "");
+		
+		result = new EHBlockNode(id);
+		
+		while (true) {
+			
+			currentLine = stream.nextLine();
+			
+			isErrRaise = Util.isErrorHandlerErrRaise(currentLine);
+			endOfMethod = Util.isEndOfFunctionOrSub(currentLine);
+			
+			if (endOfMethod) {
+				
+				break;
+			}
+			
+			if (isErrRaise) {
+				
+				String errDescription = Util.getErrorHandlerErrDescription(currentLine);
+				StringNode descriptionNode = new StringNode(errDescription);
+				result.addNode(descriptionNode);
+				
+				continue;
+			}
+			
+			this.analyze();
+			this.process(result);
+		}
+		
+		return result;
+	}
+	
+	public DoUntilNode parseDoUntil() {
+		
+		DoUntilNode result = null;
+		
+		String[] parts = currentLine.split(" ");
+		
+		String condition = parts[2];
+		
+		result = new DoUntilNode(condition);
+		
+		boolean endDoUntil = false;
+		
+		while (true) {
+			
+			currentLine = stream.nextLine();
+			
+			endDoUntil = currentLine.equals("Loop");
+			
+			if (endDoUntil) {
+				
+				break;
+			}
+			
+			this.analyze();
+			this.process(result);
+		}
 		
 		return result;
 	}
@@ -610,11 +914,11 @@ public class Parser implements Serializable {
 		isTopLevelNode = Util.isTopLevelNode(currentLine);
 		isBeginEndNode = Util.isBeginEndNode(currentLine);
 		
+		checkBypass();
+		
 		if (isTopLevelNode) {
 			
 			program = new ProgramNode(currentLine);
-			
-			checkBypass();
 			
 			return;
 		}
@@ -625,7 +929,7 @@ public class Parser implements Serializable {
 			
 			program.addNode(beginEnd);
 			
-			checkBypass();
+			isBeginEndNode = false;
 			
 			return;
 		}
@@ -636,7 +940,7 @@ public class Parser implements Serializable {
 		while (!stream.eof()) {
 			
 			currentLine = stream.nextLine();
-			
+						
 			if (!bypassTopLevel) {
 				
 				processTopLevel();
