@@ -4,15 +4,15 @@ public class BooleanNode extends ASTNode {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private boolean nodeValue;
+	private String nodeValue;
 	
-	public BooleanNode(boolean value) {
+	public BooleanNode(String value) {
 		
 		this.nodeType = NodeType.BOOLEAN;
 		this.nodeValue = value;
 	}
 	
-	public boolean getValue() {
+	public String getValue() {
 		
 		return nodeValue;
 	}
