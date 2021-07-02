@@ -6,7 +6,6 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 
-import com.converter.Token.TokenType;
 import com.converter.utils.Util;
 
 /************************************************************************************************
@@ -19,42 +18,22 @@ public class TokenInputStream implements Serializable {
 	private static final long serialVersionUID = 1L;
 	
 	private static int lineNumber = 1;
-	private static int tokenColumn = 0;
+	private static String streamLine;
 	
 	private BufferedReader reader;
-	private String delimiter;
-	private String streamLine;
-	private String[] tokens;
-	
 	private boolean lineHasContinuation;
 	
 	/********************************************************************************************
-	 * Constructs a new TokenInputStream with a space character (" ") as the default delimiter.
+	 * Constructs a new TokenInputStream.
 	 * 
 	 * @param file - The file from which to get the input stream.
-	 * 
 	 */
 	public TokenInputStream(String file) {
-		
-		this(file, " ");
-	}
-	
-	/********************************************************************************************
-	 * Constructs a new TokenInputStream with the specified delimiter.
-	 * 
-	 * @param file - The file from which to get the input stream.
-	 * @param delimiter - The delimiter used to parse the input stream.
-	 * 
-	 */
-	public TokenInputStream(String file, String delimiter) {
 		
 		ClassLoader classLoader = this.getClass().getClassLoader();
 		InputStream inputStream = classLoader.getResourceAsStream(file);
 		
-		this.delimiter = delimiter;
 		this.reader = new BufferedReader(new InputStreamReader(inputStream));
-		//this.streamLine = this.peekLine();
-		//this.tokens = streamLine.split(delimiter);
 		this.lineHasContinuation = false;
 	}
 	
@@ -63,7 +42,6 @@ public class TokenInputStream implements Serializable {
 	// 
 	private void lineFeed() {
 		
-		tokenColumn = 0;
 		lineNumber++;
 	}
 	
@@ -104,115 +82,34 @@ public class TokenInputStream implements Serializable {
 		return result;
 	}
 	
-	public String readWhile(boolean condition) {
+	/********************************************************************************************
+	 * Gets the current line number of this TokenInputStream.
+	 * 
+	 * @return
+	 *   The current line number.
+	 */
+	public static int getLineNumber() {
 		
-		String result = "";
-		
-		while (!this.eof()) {
-			
-			// TODO: fix
-			result = this.peekToken();
-		}
-		
-		return result;
-	}
-	
-	public Token readNumber() {
-		
-		Token result;
-		
-		result = new Token(Token.TokenType.NUMBER, "");
-		
-		return result;
-	}
-	
-	public void readIdentifier() {
-		
-		
-	}
-	
-	public void readEscaped() {
-		
-		
-	}
-	
-	public void readString() {
-		
-		
+		return lineNumber;
 	}
 	
 	/********************************************************************************************
-	 * Reads this TokenInputStream's current line and returns a Token containing the comment.
-	 * <p>
-	 * 
-	 * NOTE: This method does not 'consume' the TokenInputStream's line.
-	 * <p>
-	 * 
-	 * @param preserve
-	 *   True if the comment should be preserved, false otherwise.
+	 * Peeks the next line from this TokenInputStream, not advancing the underlying reader.
 	 * 
 	 * @return
-	 *   A new Token containing the comment in this TokenInputStream's line if
-	 *   <CODE>preserve</CODE> is true, <CODE>null</CODE> is returned otherwise.
+	 *   The next line.
 	 */
-	public Token readComment(boolean preserve) {
-		
-		Token result = null;
-		
-		int index = streamLine.indexOf("'");
-		String value = streamLine.substring(index);
-		
-		if (preserve) {
-			
-			// TODO: Do not convert anything in this class.
-			// Create a separate class to handle conversions and transforms.
-			//value = streamLine.replace("'", "//");
-			
-			result = new Token(TokenType.COMMENT, value);
-		}
-		
-		return result;
-	}
-	
-	public Token readNext() {
-		
-		Token result = null;
-		
-		if (this.eof()) {
-			
-			return null;
-		}
-		
-		return result;
-	}
-	
-	public String peekToken() {
-		
-		String token = null;
-		
-		try {
-			
-			reader.mark(1);
-		}
-		
-		catch (IOException ex) {
-			
-			ex.printStackTrace();
-			reportPosition();
-		}
-		
-		return token;
-	}
-	
 	public String peekLine() {
 		
+		String result = null;
+		
 		try {
 			
-			reader.mark(1);
+			reader.mark(5000);
 			
-			streamLine = reader.readLine();
+			result = reader.readLine();
 			
-			if (streamLine != null) {
+			if (result != null) {
 				
 				reader.reset();
 			}
@@ -224,41 +121,23 @@ public class TokenInputStream implements Serializable {
 			reportPosition();
 		}
 		
-		return streamLine;
-	}
-	
-	public String nextToken() {
-		
-		String token = "";
-		
-		if ((tokenColumn + 1) > tokens.length) {
+		if (result != null) {
 			
-			try {
-				
-				String query = reader.readLine();
-				
-				if (query.equals(streamLine)) {
-					
-					// Advance the reader to the next line.
-					streamLine = reader.readLine();
-				}
-				
-				tokens = streamLine.split(delimiter);
-				
-				this.lineFeed();
-			}
-			
-			catch (IOException ex) {
-				
-				ex.printStackTrace();
-			}
+			return result.trim();
 		}
 		
-		token = tokens[tokenColumn++];
-		
-		return token;
+		else {
+			
+			return result;
+		}
 	}
 	
+	/********************************************************************************************
+	 * Reads the next line from this TokenInputStream, advancing the underlying reader.
+	 * 
+	 * @return
+	 *   The next line.
+	 */
 	public String nextLine() {
 		
 		try {
