@@ -4,35 +4,39 @@ public class PropertyCallNode extends ASTNode {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private String nodeOperator = ".";
-	private String nodeSourceObjectName;
-	private String nodePropertyName;
+	private String nodeStatement;
+	private String nodeSourceObject;
+	private String nodePropertyCall;
 	
-	public PropertyCallNode(String sourceObjectName, String propertyName) {
+	public PropertyCallNode(String statement) {
 		
 		this.nodeType = NodeType.PROPERTYCALL;
-		this.nodeSourceObjectName = sourceObjectName;
-		this.nodePropertyName = propertyName;
+		this.nodeStatement = statement;
+		
+		String[] parts = statement.split("\\.");
+		
+		this.nodeSourceObject = parts[0];
+		this.nodePropertyCall = parts[1];
 	}
 	
-	public String getOperator() {
+	public String getStatement() {
 		
-		return nodeOperator;
+		return nodeStatement;
 	}
 	
-	public String getSourceObjectName() {
+	public String getSourceObject() {
 		
-		return nodeSourceObjectName;
+		return nodeSourceObject;
 	}
 	
-	public String getPropertyName() {
+	public String getPropertyCall() {
 		
-		return nodePropertyName;
+		return nodePropertyCall;
 	}
 	
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":[" + nodeSourceObjectName + nodeOperator + nodePropertyName + "]";
+		return nodeType.toString() + ":[" + nodePropertyCall + "]";
 	}
 }
