@@ -85,6 +85,8 @@ public class TokenInputStream implements Serializable {
 				streamLine = reader.readLine();
 				streamLine = streamLine.trim();
 				
+				this.lineFeed();
+				
 				sb.append(streamLine);
 				
 				lineHasContinuation = Util.hasLineContinuation(streamLine);
