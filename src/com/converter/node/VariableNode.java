@@ -36,7 +36,7 @@ public class VariableNode extends ASTNode {
 		
 		String output;
 		
-		if (nodeDataType.equals("")) {
+		if (nodeDataType == null) {
 			
 			output = nodeType.toString() + ":[" + nodeName + "]";
 		}
