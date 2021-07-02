@@ -1,53 +1,27 @@
 package com.converter.node;
 
-import java.util.Arrays;
-
-public class ThenResultNode extends ASTNode implements INodeCollection {
+public class ThenResultNode extends BaseResultNode {
 	
 	private static final long serialVersionUID = 1L;
 	
-	private ASTNode[] nodeNodes;
-	private int capacity;
-	private int size;
+	private String nodeId;
 	
-	public ThenResultNode() {
+	public ThenResultNode(String id) {
+		
+		super();
 		
 		this.nodeType = NodeType.THEN;
-		this.capacity = INITIAL_CAPACITY;
-		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
-		this.size = 0;
+		this.nodeId = id;
 	}
 	
-	@Override
-	public void addNode(ASTNode node) {
+	public String getId() {
 		
-		ASTNode[] nodesCopy;
-		
-		// Do not add if already in nodeStatements
-		for (int i = 0; i < nodeNodes.length; i++) {
-			
-			if (nodeNodes[i] == node) {
-				
-				return;
-			}
-		}
-		
-		// Grow nodeStatements as needed
-		if ((size + 1) > capacity) {
-			
-			capacity = nodeNodes.length + 10;
-			nodesCopy = Arrays.copyOfRange(nodeNodes, 0, capacity);
-			nodeNodes = nodesCopy;
-		}
-		
-		nodeNodes[size] = node;
-		
-		size++;
+		return nodeId;
 	}
 	
 	@Override
 	public String toString() {
 		
-		return nodeType.toString() + ":[...(" + size + " lines)]";
+		return nodeType.toString() + ":[...(" + size + " items) " + nodeId + "]";
 	}
 }
