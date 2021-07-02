@@ -205,7 +205,10 @@ public class Util {
 		
 		boolean result = false;
 		
-		if (value.contains(".Close") || value.contains(".Execute") || value.contains(".Write ")) {
+		if (value.contains(".Close") ||
+            value.contains(".Execute") ||
+            value.contains(".Write ") ||
+            value.contains(".MoveNext")) {
 			
 			result = true;
 		}
