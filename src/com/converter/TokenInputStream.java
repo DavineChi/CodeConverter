@@ -58,12 +58,18 @@ public class TokenInputStream implements Serializable {
 		this.lineHasContinuation = false;
 	}
 	
+	// ******************************************************************************************
+	// Helper method to advance the current line number for reporting purposes.
+	// 
 	private void lineFeed() {
 		
 		tokenColumn = 0;
 		lineNumber++;
 	}
 	
+	// ******************************************************************************************
+	// Helper method to concatenate multiple lines that have the continuation character.
+	// 
 	private String collectContinuationLines() {
 		
 		String result = "";
@@ -289,6 +295,9 @@ public class TokenInputStream implements Serializable {
 		return line == null;
 	}
 	
+	/********************************************************************************************
+	 * Prints the current line number and line value for this TokenInputStream.
+	 */
 	public static void reportPosition() {
 		
 		String id = String.format("%1$6s", lineNumber);
@@ -296,6 +305,9 @@ public class TokenInputStream implements Serializable {
 		System.out.println("[" + id + "] : " + streamLine);
 	}
 	
+	/********************************************************************************************
+	 * Closes this TokenInputStream's underlying reader object.
+	 */
 	public void close() {
 		
 		try {
