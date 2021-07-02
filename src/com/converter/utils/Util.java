@@ -412,20 +412,6 @@ public class Util {
 		return result;
 	}
 	
-	public static boolean isString(Token token) {
-		
-		boolean result = false;
-		
-		String type = token.getTokenType().toUpperCase();
-		
-		if (type.equals("COMMENT")) {
-			
-			result = true;
-		}
-		
-		return result;
-	}
-	
 	public static boolean isString(ASTNode node) {
 		
 		boolean result = false;
