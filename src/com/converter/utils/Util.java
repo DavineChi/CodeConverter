@@ -5,6 +5,30 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isDoUntil(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("Do Until ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isSelectCase(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("Select Case ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static boolean isBalanced(String value, char character) {
 		
 		boolean result = false;
@@ -343,6 +367,30 @@ public class Util {
 		if (value.contains("\"")) {
 			
 			result = Util.isBalanced(value, '"');
+		}
+		
+		return result;
+	}
+	
+	public static boolean isConstantDeclaration(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("Const ")) {
+			
+			result = true;
+		}
+		
+		else if (value.startsWith("Private ")) {
+			
+			String[] parts = value.split(" ");
+			
+			value = parts[1];
+			
+			if (value.equals("Const")) {
+				
+				result = true;
+			}
 		}
 		
 		return result;
