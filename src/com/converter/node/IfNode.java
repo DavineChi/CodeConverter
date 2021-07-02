@@ -1,12 +1,15 @@
 package com.converter.node;
 
-public class IfNode extends ASTNode {
+import java.util.Arrays;
+
+public class IfNode extends ASTNode implements INodeCollection {
 	
 	private static final long serialVersionUID = 1L;
 	
 	private ASTNode nodeCondition;
-	private ASTNode nodeThenResult;
-	private ASTNode nodeElseResult;
+	private ASTNode[] nodeNodes;
+	private int capacity;
+	private int size;
 	
 	public IfNode(ASTNode condition) {
 		
@@ -22,8 +25,9 @@ public class IfNode extends ASTNode {
 		
 		this.nodeType = NodeType.IF;
 		this.nodeCondition = condition;
-		this.nodeThenResult = thenResult;
-		this.nodeElseResult = elseResult;
+		this.capacity = INITIAL_CAPACITY;
+		this.nodeNodes = new ASTNode[INITIAL_CAPACITY];
+		this.size = 0;
 	}
 	
 	public ASTNode getCondition() {
@@ -31,24 +35,36 @@ public class IfNode extends ASTNode {
 		return nodeCondition;
 	}
 	
-	public ASTNode getThenResult() {
+	public ASTNode[] getNodes() {
 		
-		return nodeThenResult;
+		return nodeNodes;
 	}
 	
-	public void setThenResult(ThenResultNode thenResult) {
+	@Override
+	public void addNode(ASTNode node) {
 		
-		this.nodeThenResult = thenResult;
-	}
-	
-	public ASTNode getElseResult() {
+		ASTNode[] nodesCopy;
 		
-		return nodeElseResult;
-	}
-	
-	public void setElseResult(ElseResultNode elseResult) {
+		// Do not add if already in nodeStatements
+		for (int i = 0; i < nodeNodes.length; i++) {
+			
+			if (nodeNodes[i] == node) {
+				
+				return;
+			}
+		}
 		
-		this.nodeElseResult = elseResult;
+		// Grow nodeStatements as needed
+		if ((size + 1) > capacity) {
+			
+			capacity = nodeNodes.length + 10;
+			nodesCopy = Arrays.copyOfRange(nodeNodes, 0, capacity);
+			nodeNodes = nodesCopy;
+		}
+		
+		nodeNodes[size] = node;
+		
+		size++;
 	}
 	
 	@Override
