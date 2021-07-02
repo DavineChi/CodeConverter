@@ -201,17 +201,6 @@ public class Util {
 		return result;
 	}
 	
-	public static boolean isMethodCall(String value) {
-		
-		boolean result = false;
-		
-		// TODO: implementation
-		
-		
-		
-		return result;
-	}
-	
 	public static boolean isBeginEndNode(String value) {
 		
 		boolean result = false;
