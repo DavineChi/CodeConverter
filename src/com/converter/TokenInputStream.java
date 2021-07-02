@@ -291,7 +291,9 @@ public class TokenInputStream implements Serializable {
 	
 	public static void reportPosition() {
 		
-		System.out.println("Line : " + lineNumber + ", token column : " + tokenColumn);
+		String id = String.format("%1$6s", lineNumber);
+		
+		System.out.println("[" + id + "] : " + streamLine);
 	}
 	
 	public void close() {
