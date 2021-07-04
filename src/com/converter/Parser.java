@@ -272,15 +272,17 @@ public class Parser implements Serializable {
 		}
 	}
 	
-	@SuppressWarnings("unused")
-	private void load() {
+	//@SuppressWarnings("unused")
+	private ProgramNode load() {
+		
+		ProgramNode result = null;
 		
         try {
         	
             FileInputStream file = new FileInputStream(SERIALIZED_FILE);
             ObjectInputStream input = new ObjectInputStream(file);
             
-            program = (ProgramNode)(input.readObject());
+            result = (ProgramNode)(input.readObject());
             
             input.close();
         }
@@ -294,6 +296,8 @@ public class Parser implements Serializable {
         	
             cnfEx.printStackTrace();
         }
+        
+        return result;
 	}
 	
 	@SuppressWarnings("unused")
