@@ -596,20 +596,25 @@ public class Parser implements Serializable {
 		
 		result = new WithNode(expression);
 		
-		do {
+		while (true) {
+			
+			if (stream.eof()) {
+				
+				break;
+			}
 			
 			currentLine = stream.nextLine();
 			
-			this.analyze();
+			boolean stop = currentLine.equals("End With");
 			
-			if (isProperty) {
+			if (stop) {
 				
-				PropertyNode property = new PropertyNode(currentLine);
-				
-				result.addNode(property);
+				break;
 			}
 			
-		} while (!(currentLine.equals("End With")));
+			this.analyze();
+			this.process(result);
+		}
 		
 		return result;
 	}
