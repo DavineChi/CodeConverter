@@ -126,6 +126,7 @@ public class Parser implements Serializable {
 		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
 		isBlankLine = Util.isBlankLine(currentLine);
 		isSelectCase = Util.isSelectCase(currentLine);
+		isCaseBlock = Util.isCaseBlock(currentLine);
 		isErrorHandlerHandle = Util.isErrorHandlerHandle(currentLine);
 		isDoUntil = Util.isDoUntil(currentLine);
 	}
@@ -239,6 +240,15 @@ public class Parser implements Serializable {
 			SelectCaseNode selectCase = parseSelectCase();
 			
 			node.addNode(selectCase);
+			
+			return;
+		}
+		
+		if (isCaseBlock) {
+			
+			CaseNode caseBlock = parseCaseBlock();
+			
+			node.addNode(caseBlock);
 			
 			return;
 		}
@@ -502,36 +512,36 @@ public class Parser implements Serializable {
 		return result;
 	}
 	
-	private CaseNode collectCaseBlock() {
+	public CaseNode parseCaseBlock() {
 		
 		CaseNode result = null;
 		
-		String lookupValue = "Case ";
-		String expression = currentLine.replace(lookupValue, "");
+		String expression = currentLine.replace("Case ", "");
 		
 		result = new CaseNode(expression);
 		
-//		boolean endCaseBlock = false;
-		
 		while (true) {
 			
-//			String peek = stream.peekLine();
-//			
-//			endCaseBlock = peek.startsWith(lookupValue);
-//			
-//			if (endCaseBlock) {
-//				
-//				break;
-//			}
+			if (stream.eof()) {
+				
+				break;
+			}
 			
-			boolean stop = currentLine.equals("End Select");
+			String peekedValue = stream.peekLine();
 			
-			if (stop) {
+			if (peekedValue.startsWith("Case ") || peekedValue.equals("End Select")) {
 				
 				break;
 			}
 			
 			currentLine = stream.nextLine();
+			
+			boolean stop = Util.isEndOfCaseBlock(currentLine);
+			
+			if (stop) {
+				
+				break;
+			}
 			
 			this.analyze();
 			this.process(result);
