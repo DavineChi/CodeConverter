@@ -480,6 +480,8 @@ public class Parser implements Serializable {
 		
 		MethodNode result = null;
 		
+		int lineNumber = TokenInputStream.getLineNumber();
+		
 		String[] tokens = value.split(" ");
 		
 		String accessModifier = tokens[0];
@@ -497,7 +499,7 @@ public class Parser implements Serializable {
 		
 		inMethodBody = false;
 		
-		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, methodBody);
+		result = new MethodNode(accessModifier, callType, returnType, callName, parameters, methodBody, lineNumber);
 		
 		return result;
 	}
