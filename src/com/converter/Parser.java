@@ -74,11 +74,11 @@ public class Parser implements Serializable {
 	private boolean isWithBlock;
 	private boolean isIfBlock;
 	private boolean isPropertyCall;
-	private boolean isProperty;
 	private boolean isTermination;
 	private boolean isOnErrorGoto;
 	private boolean isBlankLine;
 	private boolean isSelectCase;
+	private boolean isCaseBlock;
 	private boolean isErrorHandlerHandle;
 	private boolean isDoUntil;
 	
@@ -102,11 +102,11 @@ public class Parser implements Serializable {
 		this.isWithBlock = false;
 		this.isIfBlock = false;
 		this.isPropertyCall = false;
-		this.isProperty = false;
 		this.isTermination = false;
 		this.isOnErrorGoto = false;
 		this.isBlankLine = false;
 		this.isSelectCase = false;
+		this.isCaseBlock = false;
 		this.isErrorHandlerHandle = false;
 		this.isDoUntil = false;
 	}
@@ -122,7 +122,6 @@ public class Parser implements Serializable {
 		isWithBlock = Util.isWithBlock(currentLine);
 		isIfBlock = Util.isIfBlock(currentLine);
 		isPropertyCall = Util.isPropertyCall(currentLine);
-		isProperty = Util.isProperty(currentLine);
 		isTermination = Util.isTermination(currentLine);
 		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
 		isBlankLine = Util.isBlankLine(currentLine);
