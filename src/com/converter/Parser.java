@@ -649,6 +649,37 @@ public class Parser implements Serializable {
 		
 		while (true) {
 			
+			if (stream.eof()) {
+				
+				break;
+			}
+			
+			boolean singleLineIfThen = Util.isSingleLineIfThen(currentLine);
+			
+			if (singleLineIfThen) {
+				
+				String parts[] = currentLine.split("Then");
+				String condition = parts[1].trim();
+				
+				ASTNode expression = null;
+				
+				boolean isPropertyCall = Util.isPropertyCall(condition);
+				
+				if (isPropertyCall) {
+					
+					expression = new PropertyCallNode(condition);
+				}
+				
+				else {
+					
+					expression = new StringNode(condition);
+				}
+				
+				thenResult.addNode(expression);
+				
+				break;
+			}
+			
 			currentLine = stream.nextLine();
 			
 			boolean stop = currentLine.equals("End If") ||
@@ -666,33 +697,60 @@ public class Parser implements Serializable {
 		
 		node.addNode((ASTNode)(thenResult));
 		
-		if (currentLine.startsWith("ElseIf")) {
+		while (true) {
 			
-			ASTNode expression = getIfCondition(currentLine);
-			
-			elseIfResult = new ElseIfResultNode(expression);
-			
-			while (true) {
+			if (currentLine.startsWith("ElseIf")) {
 				
-				currentLine = stream.nextLine();
+				ASTNode expression = getIfCondition(currentLine);
 				
-				boolean stop = currentLine.equals("End If") || currentLine.equals("Else");
+				elseIfResult = new ElseIfResultNode(expression);
 				
-				if (stop) {
+				while (true) {
 					
-					break;
+					if (stream.eof()) {
+						
+						break;
+					}
+					
+					currentLine = stream.nextLine();
+					
+					boolean stop = currentLine.equals("End If") || currentLine.equals("Else");
+					
+					if (stop) {
+						
+						break;
+					}
+					
+					this.analyze();
+					this.process(elseIfResult);
+					
+					String peek = stream.peekLine();
+					
+					if (peek.startsWith("ElseIf ")) {
+						
+						currentLine = stream.nextLine();
+						
+						break;
+					}
 				}
 				
-				this.analyze();
-				this.process(elseIfResult);
+				node.addNode((ASTNode)(elseIfResult));
 			}
 			
-			node.addNode((ASTNode)(elseIfResult));
+			else {
+				
+				break;
+			}
 		}
 		
 		if (currentLine.equals("Else")) {
 			
 			while (true) {
+				
+				if (stream.eof()) {
+					
+					break;
+				}
 				
 				currentLine = stream.nextLine();
 				
