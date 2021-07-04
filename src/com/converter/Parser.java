@@ -832,6 +832,7 @@ public class Parser implements Serializable {
 		String[] leftSideParts = leftSide.split(" ");
 		
 		boolean isConstant = Util.isConstantDeclaration(leftSide);
+		boolean isProperty = Util.isProperty(leftSide);
 		boolean isAttribute = false;
 		
 		if (leftSide.startsWith("Public ") || leftSide.startsWith("Private ")) {
@@ -887,6 +888,11 @@ public class Parser implements Serializable {
 		else if (isConstant) {
 			
 			leftNode = new ConstantNode(accessModifier, dataType, name);
+		}
+		
+		else if (isProperty) {
+			
+			leftNode = new PropertyNode(name);
 		}
 		
 		else {
