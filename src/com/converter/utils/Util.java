@@ -242,9 +242,14 @@ public class Util {
 		boolean result = false;
 		
 		if (value.contains(".Close") ||
+			value.contains(".CursorLocation") ||
             value.contains(".Execute") ||
-            value.contains(".Write ") ||
-            value.contains(".MoveNext")) {
+            value.contains(".Open") ||
+            value.contains(".MoveFirst") ||
+            value.contains(".MoveNext") ||
+            value.contains(".Raise") ||
+            value.contains(".RollbackTrans") ||
+            value.contains(".Write ")) {
 			
 			result = true;
 		}
