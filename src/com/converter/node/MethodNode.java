@@ -21,14 +21,32 @@ public class MethodNode extends ASTNode {
                       ASTNode body) {
 		
 		this.nodeType = NodeType.METHOD;
-		this.lineNumber = TokenInputStream.getLineNumber();
 		this.nodeAccessModifier = accessModifier;
 		this.nodeCallType = callType;
 		this.nodeReturnType = returnType;
 		this.nodeName = name;
 		this.nodeParameters = parameters;
 		this.nodeBody = body;
+		this.lineNumber = TokenInputStream.getLineNumber();
 	}
+	
+	public MethodNode(String accessModifier,
+                      String callType,
+                      String returnType,
+                      String name,
+                      ParameterNode[] parameters,
+                      ASTNode body,
+                      int lineNumber) {
+
+		this.nodeType = NodeType.METHOD;
+		this.nodeAccessModifier = accessModifier;
+		this.nodeCallType = callType;
+		this.nodeReturnType = returnType;
+		this.nodeName = name;
+		this.nodeParameters = parameters;
+		this.nodeBody = body;
+		this.lineNumber = lineNumber;
+}
 	
 	public String getAccessModifier() {
 		
