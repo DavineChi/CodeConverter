@@ -37,6 +37,11 @@ public class ProgramNode extends ASTNode implements INodeCollection {
 		return nodeNodes;
 	}
 	
+	public int size() {
+		
+		return size;
+	}
+	
 	@Override
 	public void addNode(ASTNode node) {
 		
