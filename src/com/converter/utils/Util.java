@@ -5,11 +5,47 @@ import com.converter.node.NodeType;
 
 public class Util {
 	
+	public static boolean isSingleLineIfThen(String value) {
+		
+		boolean result = false;
+		
+		if (value.contains("Then ") && !value.endsWith("Then")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
 	public static boolean isDoUntil(String value) {
 		
 		boolean result = false;
 		
 		if (value.startsWith("Do Until ")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isEndOfCaseBlock(String value) {
+		
+		boolean result = false;
+		
+		if (value.equals("End Select")) {
+			
+			result = true;
+		}
+		
+		return result;
+	}
+	
+	public static boolean isCaseBlock(String value) {
+		
+		boolean result = false;
+		
+		if (value.startsWith("Case ")) {
 			
 			result = true;
 		}
