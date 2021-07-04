@@ -440,7 +440,7 @@ public class Parser implements Serializable {
 
 			boolean stop = Util.isEndOfFunctionOrSub(currentLine);
 			
-			if (stop) {
+			if (stream.eof() || stop) {
 				
 				break;
 			}
@@ -449,13 +449,6 @@ public class Parser implements Serializable {
 			
 			this.analyze();
 			this.process(result);
-			
-			if (isTermination) {
-				
-				ASTNode node = new TerminationNode(currentLine);
-				
-				result.addNode(node);
-			}
 		}
 		
 		return result;
@@ -920,6 +913,11 @@ public class Parser implements Serializable {
 		
 		while (true) {
 			
+			if (stream.eof()) {
+				
+				break;
+			}
+			
 			currentLine = stream.nextLine();
 			
 			isErrRaise = Util.isErrorHandlerErrRaise(currentLine);
@@ -959,6 +957,11 @@ public class Parser implements Serializable {
 		boolean endDoUntil = false;
 		
 		while (true) {
+			
+			if (stream.eof()) {
+				
+				break;
+			}
 			
 			currentLine = stream.nextLine();
 			
