@@ -556,30 +556,28 @@ public class Parser implements Serializable {
 		
 		SelectCaseNode result = null;
 		
+		// TODO: Test this method for completeness and accuracy.
+		
 		String expression = currentLine.replace("Select Case ", "");
 		
 		result = new SelectCaseNode(expression);
 		
 		boolean endSelectCase = false;
-		boolean isCaseBlock = false;
 		
 		while (true) {
 			
-			currentLine = stream.nextLine();
-			
-			endSelectCase = currentLine.equals("End Select");
-			isCaseBlock = currentLine.startsWith("Case ");
-			
-			if (endSelectCase) {
+			if (stream.eof()) {
 				
 				break;
 			}
 			
-			if (isCaseBlock) {
+			currentLine = stream.nextLine();
+			
+			endSelectCase = Util.isEndOfCaseBlock(currentLine);
+			
+			if (endSelectCase) {
 				
-				CaseNode caseNode = collectCaseBlock();
-				
-				result.addNode(caseNode);
+				break;
 			}
 			
 			this.analyze();
