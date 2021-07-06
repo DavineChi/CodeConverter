@@ -272,8 +272,7 @@ public class Parser implements Serializable {
 		}
 	}
 	
-	//@SuppressWarnings("unused")
-	private ProgramNode load() {
+	public ProgramNode load() {
 		
 		ProgramNode result = null;
 		
@@ -300,8 +299,7 @@ public class Parser implements Serializable {
         return result;
 	}
 	
-	@SuppressWarnings("unused")
-	private void save() {
+	public void save() {
 		
         try {
         	
