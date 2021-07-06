@@ -1041,15 +1041,4 @@ public class Parser implements Serializable {
 		
 		stream.close();
 	}
-	
-	public static void main(String[] args) {
-		
-		Parser parser = new Parser("main/resources/CEto.cls");
-		
-		parser.start();
-		//parser.save();
-		parser.exit();
-		
-		//parser.load();
-	}
 }
