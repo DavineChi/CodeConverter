@@ -51,9 +51,9 @@ import com.converter.utils.ParserUtil;
  */
 public class Parser implements Serializable {
 	
-	private static final String SERIALIZED_FILE = "ParseTree.ser";
 	private static final long serialVersionUID = 1L;
 	
+	private String serializedFile;
 	private TokenInputStream stream;
 	private ProgramNode program;
 	private String currentLine;
@@ -84,7 +84,8 @@ public class Parser implements Serializable {
 	
 	public Parser(String filename) {
 		
-		this.stream = new TokenInputStream(filename);
+		this.stream = new TokenInputStream("main/resources/" + filename + ".cls");
+		this.serializedFile = filename + ".ser";
 		this.currentLine = null;
 		
 		this.bypassFuse = new boolean[] { false, false };
@@ -278,7 +279,7 @@ public class Parser implements Serializable {
 		
         try {
         	
-            FileInputStream file = new FileInputStream(SERIALIZED_FILE);
+            FileInputStream file = new FileInputStream(serializedFile);
             ObjectInputStream input = new ObjectInputStream(file);
             
             result = (ProgramNode)(input.readObject());
@@ -303,7 +304,7 @@ public class Parser implements Serializable {
 		
         try {
         	
-            FileOutputStream file = new FileOutputStream(SERIALIZED_FILE);
+            FileOutputStream file = new FileOutputStream(serializedFile);
             ObjectOutputStream output = new ObjectOutputStream(file);
             
             output.writeObject(program);
