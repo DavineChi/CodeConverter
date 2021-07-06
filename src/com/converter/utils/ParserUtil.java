@@ -3,7 +3,7 @@ package com.converter.utils;
 import com.converter.node.ASTNode;
 import com.converter.node.NodeType;
 
-public class Util {
+public class ParserUtil {
 	
 	public static boolean isSingleLineIfThen(String value) {
 		
@@ -339,7 +339,7 @@ public class Util {
 		
 		boolean result = false;
 		
-		if (Util.isAssignment(value) && value.startsWith("Set ")) {
+		if (ParserUtil.isAssignment(value) && value.startsWith("Set ")) {
 			
 			result = true;
 		}
@@ -409,7 +409,7 @@ public class Util {
 		
 		if (value.contains("\"")) {
 			
-			result = Util.isBalanced(value, '"');
+			result = ParserUtil.isBalanced(value, '"');
 		}
 		
 		return result;

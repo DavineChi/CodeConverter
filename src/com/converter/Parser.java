@@ -38,7 +38,7 @@ import com.converter.node.ThenResultNode;
 import com.converter.node.VariableNode;
 import com.converter.node.WithNode;
 import com.converter.utils.DataType;
-import com.converter.utils.Util;
+import com.converter.utils.ParserUtil;
 
 /************************************************************************************************
  * Main driver class used for parsing VB6 source files.</br>
@@ -113,22 +113,22 @@ public class Parser implements Serializable {
 	
 	private void analyze() {
 		
-		isComment = Util.isComment(currentLine);
-		containsComment = Util.containsComment(currentLine);
-		isMethod = Util.isFunctionOrSub(currentLine);
-		isAssignment = Util.isAssignment(currentLine);
-		isDeclaration = Util.isDeclaration(currentLine);
-		isSetStatement = Util.isSetStatement(currentLine);
-		isWithBlock = Util.isWithBlock(currentLine);
-		isIfBlock = Util.isIfBlock(currentLine);
-		isPropertyCall = Util.isPropertyCall(currentLine);
-		isTermination = Util.isTermination(currentLine);
-		isOnErrorGoto = Util.isOnErrorGoto(currentLine);
-		isBlankLine = Util.isBlankLine(currentLine);
-		isSelectCase = Util.isSelectCase(currentLine);
-		isCaseBlock = Util.isCaseBlock(currentLine);
-		isErrorHandlerHandle = Util.isErrorHandlerHandle(currentLine);
-		isDoUntil = Util.isDoUntil(currentLine);
+		isComment = ParserUtil.isComment(currentLine);
+		containsComment = ParserUtil.containsComment(currentLine);
+		isMethod = ParserUtil.isFunctionOrSub(currentLine);
+		isAssignment = ParserUtil.isAssignment(currentLine);
+		isDeclaration = ParserUtil.isDeclaration(currentLine);
+		isSetStatement = ParserUtil.isSetStatement(currentLine);
+		isWithBlock = ParserUtil.isWithBlock(currentLine);
+		isIfBlock = ParserUtil.isIfBlock(currentLine);
+		isPropertyCall = ParserUtil.isPropertyCall(currentLine);
+		isTermination = ParserUtil.isTermination(currentLine);
+		isOnErrorGoto = ParserUtil.isOnErrorGoto(currentLine);
+		isBlankLine = ParserUtil.isBlankLine(currentLine);
+		isSelectCase = ParserUtil.isSelectCase(currentLine);
+		isCaseBlock = ParserUtil.isCaseBlock(currentLine);
+		isErrorHandlerHandle = ParserUtil.isErrorHandlerHandle(currentLine);
+		isDoUntil = ParserUtil.isDoUntil(currentLine);
 	}
 	
 	private void process(INodeCollection node) {
@@ -330,7 +330,7 @@ public class Parser implements Serializable {
 		
 		if (containsComment) {
 			
-			right = Util.removeInlineComment(right);
+			right = ParserUtil.removeInlineComment(right);
 		}
 		
 		result = new String[] { left, right };
@@ -438,7 +438,7 @@ public class Parser implements Serializable {
 		
 		while (true) {
 
-			boolean stop = Util.isEndOfFunctionOrSub(currentLine);
+			boolean stop = ParserUtil.isEndOfFunctionOrSub(currentLine);
 			
 			if (stream.eof() || stop) {
 				
@@ -463,7 +463,7 @@ public class Parser implements Serializable {
 		String variableName = parts[1];
 		String dataType = parts[3];
 		
-		boolean validType = Util.isValidDataType(dataType);
+		boolean validType = ParserUtil.isValidDataType(dataType);
 		
 		if (validType) {
 			
@@ -535,7 +535,7 @@ public class Parser implements Serializable {
 			
 			currentLine = stream.nextLine();
 			
-			boolean stop = Util.isEndOfCaseBlock(currentLine);
+			boolean stop = ParserUtil.isEndOfCaseBlock(currentLine);
 			
 			if (stop) {
 				
@@ -570,7 +570,7 @@ public class Parser implements Serializable {
 			
 			currentLine = stream.nextLine();
 			
-			endSelectCase = Util.isEndOfCaseBlock(currentLine);
+			endSelectCase = ParserUtil.isEndOfCaseBlock(currentLine);
 			
 			if (endSelectCase) {
 				
@@ -620,7 +620,7 @@ public class Parser implements Serializable {
 		
 		ASTNode result = null;
 		
-		String ifCondition = Util.getIfCondition(currentLine);
+		String ifCondition = ParserUtil.getIfCondition(currentLine);
 		String[] parts = ifCondition.split(" ");
 		
 		StringNode left = null;
@@ -632,7 +632,7 @@ public class Parser implements Serializable {
 		if (parts.length > 1) {
 			
 			operator = parts[1];
-			isRelOp = Util.isRelationalOperator(operator);
+			isRelOp = ParserUtil.isRelationalOperator(operator);
 		}
 		
 		if (isRelOp) {
@@ -665,7 +665,7 @@ public class Parser implements Serializable {
 				break;
 			}
 			
-			boolean singleLineIfThen = Util.isSingleLineIfThen(currentLine);
+			boolean singleLineIfThen = ParserUtil.isSingleLineIfThen(currentLine);
 			
 			if (singleLineIfThen) {
 				
@@ -674,7 +674,7 @@ public class Parser implements Serializable {
 				
 				ASTNode expression = null;
 				
-				boolean isPropertyCall = Util.isPropertyCall(condition);
+				boolean isPropertyCall = ParserUtil.isPropertyCall(condition);
 				
 				if (isPropertyCall) {
 					
@@ -824,8 +824,8 @@ public class Parser implements Serializable {
 		String rightSide = statement[1];
 		String[] leftSideParts = leftSide.split(" ");
 		
-		boolean isConstant = Util.isConstantDeclaration(leftSide);
-		boolean isProperty = Util.isProperty(leftSide);
+		boolean isConstant = ParserUtil.isConstantDeclaration(leftSide);
+		boolean isProperty = ParserUtil.isProperty(leftSide);
 		boolean isAttribute = false;
 		
 		if (leftSide.startsWith("Public ") || leftSide.startsWith("Private ")) {
@@ -920,8 +920,8 @@ public class Parser implements Serializable {
 			
 			currentLine = stream.nextLine();
 			
-			isErrRaise = Util.isErrorHandlerErrRaise(currentLine);
-			endOfMethod = Util.isEndOfFunctionOrSub(currentLine);
+			isErrRaise = ParserUtil.isErrorHandlerErrRaise(currentLine);
+			endOfMethod = ParserUtil.isEndOfFunctionOrSub(currentLine);
 			
 			if (endOfMethod) {
 				
@@ -930,7 +930,7 @@ public class Parser implements Serializable {
 			
 			if (isErrRaise) {
 				
-				String errDescription = Util.getErrorHandlerErrDescription(currentLine);
+				String errDescription = ParserUtil.getErrorHandlerErrDescription(currentLine);
 				StringNode descriptionNode = new StringNode(errDescription);
 				result.addNode(descriptionNode);
 				
@@ -996,8 +996,8 @@ public class Parser implements Serializable {
 	
 	private void processTopLevel() {
 		
-		isTopLevelNode = Util.isTopLevelNode(currentLine);
-		isBeginEndNode = Util.isBeginEndNode(currentLine);
+		isTopLevelNode = ParserUtil.isTopLevelNode(currentLine);
+		isBeginEndNode = ParserUtil.isBeginEndNode(currentLine);
 		
 		checkBypass();
 		
