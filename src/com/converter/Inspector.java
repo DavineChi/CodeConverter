@@ -9,11 +9,14 @@ public class Inspector {
 	private ProgramNode program;
 	private ASTNode[] nodes;
 	private int methodNodeCount;
+	private int currentNodeIndex;
+	
 	
 	public Inspector(ProgramNode program) {
 		
 		this.program = program;
 		this.methodNodeCount = 0;
+		this.currentNodeIndex = 0;
 		
 		initialize();
 	}
@@ -33,9 +36,30 @@ public class Inspector {
 		}
 	}
 	
+	public ProgramNode getProgram() {
+		
+		return program;
+	}
+	
+	public ASTNode[] getNodes() {
+		
+		return nodes;
+	}
+	
 	public int getNumberOfMethods() {
 		
 		return methodNodeCount;
+	}
+	
+	public ASTNode nextNode() {
+		
+		ASTNode result = null;
+		
+		result = nodes[currentNodeIndex];
+		
+		currentNodeIndex++;
+		
+		return result;
 	}
 	
 	public MethodNode getMethodByName(String searchName) {
@@ -58,6 +82,20 @@ public class Inspector {
 					break;
 				}
 			}
+		}
+		
+		return result;
+	}
+	
+	public boolean endOfNodes() {
+		
+		boolean result = false;
+		
+		ASTNode check = nodes[currentNodeIndex];
+		
+		if (check == null) {
+			
+			result = true;
 		}
 		
 		return result;
