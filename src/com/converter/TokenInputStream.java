@@ -6,7 +6,7 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.Serializable;
 
-import com.converter.utils.Util;
+import com.converter.utils.ParserUtil;
 
 /************************************************************************************************
  * This class is used to read and manage streams of lines and tokens from a given input file.
@@ -67,7 +67,7 @@ public class TokenInputStream implements Serializable {
 				
 				sb.append(streamLine);
 				
-				lineHasContinuation = Util.hasLineContinuation(streamLine);
+				lineHasContinuation = ParserUtil.hasLineContinuation(streamLine);
 			}
 		}
 		
@@ -146,7 +146,7 @@ public class TokenInputStream implements Serializable {
 			
 			TokenInputStream.reportPosition();
 			
-			lineHasContinuation = Util.hasLineContinuation(streamLine);
+			lineHasContinuation = ParserUtil.hasLineContinuation(streamLine);
 			
 			if (lineHasContinuation) {
 				
