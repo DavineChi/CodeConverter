@@ -91,6 +91,11 @@ public class Inspector {
 		
 		boolean result = false;
 		
+		if (currentNodeIndex >= nodes.length) {
+			
+			return true;
+		}
+		
 		ASTNode check = nodes[currentNodeIndex];
 		
 		if (check == null) {
